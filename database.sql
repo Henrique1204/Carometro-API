@@ -42,9 +42,9 @@ CREATE TABLE turmas (
 );
 
 INSERT INTO alunos (id, nome, email, telefone, data_nascimento, foto, id_turma) VALUES 
-(null, 'Paulo', 'paulo@gmail.com', '11 987654321', '2001-09-20', '/foto/foto.png', 1),
-(null, 'Henrique', 'henrique@gmail.com', '11 987654321', '2001-09-20', '/foto/foto.png', 1),
-(null, 'Silva', 'silva@gmail.com', '11 987654321', '2001-09-20', '/foto/foto.png', 2);
+(null, 'Paulo', 'paulo@gmail.com', '11 987654321', '2001-09-20', 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg', 1),
+(null, 'Henrique', 'henrique@gmail.com', '11 987654321', '2001-09-20', 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg', 1),
+(null, 'Silva', 'silva@gmail.com', '11 987654321', '2001-09-20', 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg', 2);
 
 INSERT INTO cursos (id, nome, periodo) VALUES 
 (null, 'Desenvolvimento', 'manhã'),

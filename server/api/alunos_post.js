@@ -2,7 +2,8 @@ const dbCon = require('../db.js');
 
 module.exports = (req, res) => {
     try {
-        const { nome, email, telefone, data_nascimento, foto, id_turma } = req.body;
+        const { nome, email, telefone, data_nascimento, id_turma } = req.body;
+        const foto = req.file?.path.replace('\\', '/');
 
         if (!nome || !email || !telefone || !data_nascimento || !foto || !id_turma ) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });

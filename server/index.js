@@ -11,6 +11,20 @@ app.use(express.json());
 const corsConfig = require('./corsCofnig.js');
 corsConfig(app);
 
+// Configurando multer para uploads.
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination(req, file, cb) {
+        cb(null, './uploads');
+    },
+    filename(req, file, cb) {
+        cb(null, `${new Date().toISOString().replace(/:/g, '-')}-${file.originalname}`);
+    }
+});
+
+const upload = multer({ storage });
+
 // Carregando banco de dados.
 const dbCon = require('./db.js');
 dbCon.connect();
@@ -21,7 +35,7 @@ app.get('/alunos', getAlunos);
 app.get('/alunos/:id', getAlunos);
 
 const postAlunos = require('./api/alunos_post.js');
-app.post('/alunos', postAlunos);
+app.post('/alunos', upload.single('foto') ,postAlunos);
 
 // Inicializando o servidor.
 const server = http.createServer(app); 
