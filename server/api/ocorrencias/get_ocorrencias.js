@@ -3,9 +3,14 @@ const dbCon = require('../../db.js');
 module.exports = (req, res) => {
     try {
         const { id } = req.params;
-        const where = (id) ? `WHERE id = ${id}` : '';
+        const where = (id) ? `WHERE o.id = ${id}` : '';
 
-        dbCon.query(`SELECT * FROM ocorrencias ${where}`, (erroOcorrencias, ocorrencias) => {
+        const consulta = (
+            `SELECT o.id, o.data_criacao, o.titulo, o.conteudo, o.criado_por, alunos.nome AS aluno 
+            FROM ocorrencias as o INNER JOIN alunos ON alunos.id = o.id_aluno ${where}`
+        );
+
+        dbCon.query(consulta, (erroOcorrencias, ocorrencias) => {
             if (erroOcorrencias) {
                 const erro = JSON.stringify({
                     cod: 502,
