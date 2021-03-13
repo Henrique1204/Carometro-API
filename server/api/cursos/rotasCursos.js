@@ -1,5 +1,8 @@
+// Arquivos de rotas.
+const getCursos = require('./get_cursos.js');
+
 module.exports = (app) => {
-    app.get('/cursos', (req, res) => {
-        res.status(200).send({ status: 'Sucesso', mensagem: 'Está rota está no ar.' });
-    });
+    // GET
+    app.get('/cursos', getCursos);
+    app.get('/cursos/:id', getCursos);
 };
