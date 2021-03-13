@@ -30,7 +30,7 @@ module.exports = (req, res) => {
             unlink(foto_antiga, () => {});
     
             console.log(`PUT: Itens atualizados 1\nID: ${id}`);
-            res.status(201).send({ status: 'Sucesso', mensagem: 'Dados adicionados com sucesso!' });
+            res.status(201).send({ status: 'Sucesso', mensagem: 'Dados atualizados com sucesso!' });
         });
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);

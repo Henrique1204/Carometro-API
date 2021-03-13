@@ -40,6 +40,9 @@ app.post('/alunos', upload.single('foto') , postAluno);
 const putAluno = require('./api/put_aluno.js');
 app.put('/alunos/:id', upload.single('foto') , putAluno);
 
+const deleteAluno = require('./api/delete_aluno.js');
+app.delete('/alunos/:id', upload.single('foto') , deleteAluno);
+
 // Rota para arquivos estáticos.
 app.use('/uploads', express.static('uploads'));
 
