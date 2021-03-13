@@ -19,7 +19,7 @@ module.exports = (req, res) => {
 
         const consulta = (
             `SELECT a.id, a.nome, a.email, a.telefone, a.data_nascimento, a.foto, t.nome AS turma, t.formado  
-            FROM alunos AS a INNER JOIN turmas AS t ON a.id_turma = t.id ${where}`
+            FROM alunos AS a INNER JOIN turmas AS t ON a.id_turma = t.id ${where} ORDER by a.id`
         );
 
         dbCon.query(consulta, (erroAlunos, alunos) => {
