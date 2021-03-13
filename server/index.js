@@ -16,8 +16,9 @@ const dbCon = require('./db.js');
 dbCon.connect();
 
 // Rotas da API.
-const { getAlunos } = require('./api/alunos_get.js');
+const getAlunos = require('./api/alunos_get.js');
 app.get('/alunos', getAlunos);
+app.get('/alunos/:id', getAlunos);
 
 // Inicializando o servidor.
 const server = http.createServer(app); 

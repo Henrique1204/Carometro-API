@@ -12,12 +12,14 @@ const filtrarOcorrencias = (lista, id) => {
     return listaFormatada
 };
 
-
-const getAlunos = (req, res) => {
+module.exports = (req, res) => {
     try {
+        const { id } = req.params;
+        const where = (id) ? `WHERE a.id = ${id}` : '';
+
         const consulta = (
             `SELECT a.id, a.nome, a.email, a.telefone, a.data_nascimento, a.foto, t.nome AS turma, t.formado  
-            FROM alunos AS a INNER JOIN turmas AS t ON a.id_turma = t.id`
+            FROM alunos AS a INNER JOIN turmas AS t ON a.id_turma = t.id ${where}`
         );
 
         dbCon.query(consulta, (erroAlunos, alunos) => {
@@ -54,7 +56,3 @@ const getAlunos = (req, res) => {
         res.status(cod).send({ status: "Falha", mensagem });
     }
 };
-
-module.exports = {
-    getAlunos
-}
