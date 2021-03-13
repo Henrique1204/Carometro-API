@@ -30,12 +30,12 @@ const dbCon = require('./db.js');
 dbCon.connect();
 
 // Rotas da API.
-const getAlunos = require('./api/alunos_get.js');
-app.get('/alunos', getAlunos);
-app.get('/alunos/:id', getAlunos);
+const buscarAluno = require('./api/buscar_alunos.js');
+app.get('/alunos', buscarAluno);
+app.get('/alunos/:id', buscarAluno);
 
-const postAlunos = require('./api/alunos_post.js');
-app.post('/alunos', upload.single('foto') ,postAlunos);
+const alterarAluno = require('./api/alterar_alunos.js');
+app.post('/alunos', upload.single('foto') , alterarAluno);
 
 // Rota para arquivos estáticos.
 app.use('/uploads', express.static('uploads'));
