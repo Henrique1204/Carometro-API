@@ -1,6 +1,8 @@
+// Arquivos de rotas.
+const getOcorrencias = require('./get_ocorrencias.js');
+
 module.exports = (app) => {
-    // Rota privisória.
-    app.get('/ocorrencias', (req, res) => {
-        res.status(200).send({ status: 'Sucesso', mensagem: 'Rota no ar!' });
-    });
+    // GET
+    app.get('/ocorrencias', getOcorrencias);
+    app.get('/ocorrencias/:id', getOcorrencias);
 };
