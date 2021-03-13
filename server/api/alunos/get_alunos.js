@@ -9,7 +9,7 @@ const filtrarOcorrencias = (lista, id) => {
         criado_por
     }));
 
-    return listaFormatada
+    return listaFormatada;
 };
 
 module.exports = (req, res) => {

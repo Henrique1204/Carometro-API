@@ -1,5 +1,8 @@
+// Arquivos de rotas.
+const getTurmas = require('./get_turmas.js');
+
 module.exports = (app) => {
-    app.get('/turmas', (req, res) => {
-        res.status(200).send({ status: 'Sucesso', mensagem: 'Essa rota está no ar.' });
-    });
+    // GET
+    app.get('/turmas', getTurmas);
+    app.get('/turmas/:id', getTurmas);
 };
