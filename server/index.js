@@ -37,6 +37,9 @@ app.get('/alunos/:id', getAlunos);
 const postAlunos = require('./api/alunos_post.js');
 app.post('/alunos', upload.single('foto') ,postAlunos);
 
+// Rota para arquivos estáticos.
+app.use('/uploads', express.static('uploads'));
+
 // Inicializando o servidor.
 const server = http.createServer(app); 
 server.listen(8000, '127.0.0.1');
