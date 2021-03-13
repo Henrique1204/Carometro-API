@@ -24,22 +24,24 @@ module.exports = (req, res) => {
 
         dbCon.query(consulta, (erroAlunos, alunos) => {
             if (erroAlunos) {
-                const erro = JSON.stringify({
-                    cod: 502,
+                console.log(erroAlunos.sqlMessage);
+                res.status(502).send({
+                    status: 'Falha',
                     messagem: 'Erro ao buscar por dados na tabela alunos.'
                 });
 
-                throw new Error(erro);
+                return;
             }
 
             dbCon.query('SELECT * FROM ocorrencias', (erroOcorrencias, ocorrencias) => {
                 if (erroOcorrencias) {
-                    const erro = JSON.stringify({
-                        cod: 502,
+                    console.log(erroOcorrencias.sqlMessage);
+                    res.status(502).send({
+                        status: 'Falha',
                         messagem: 'Erro ao buscar por dados na tabela ocorrencias.'
                     });
     
-                    throw new Error(erro);
+                    return;
                 }
                 
                 const dados = alunos.map((aluno) => ({

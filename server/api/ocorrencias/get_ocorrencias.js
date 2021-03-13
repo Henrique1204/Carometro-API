@@ -10,14 +10,15 @@ module.exports = (req, res) => {
             FROM ocorrencias as o INNER JOIN alunos ON alunos.id = o.id_aluno ${where} ORDER by o.id`
         );
 
-        dbCon.query(consulta, (erroOcorrencias, ocorrencias) => {
-            if (erroOcorrencias) {
-                const erro = JSON.stringify({
-                    cod: 502,
+        dbCon.query(consulta, (erroDB, ocorrencias) => {
+            if (erroDB) {
+                console.log(erroDB.sqlMessage);
+                res.status(502).send({
+                    status: 'Falha',
                     messagem: 'Erro ao buscar por dados na tabela ocorrencias.'
                 });
 
-                throw new Error(erro);
+                return;
             }
 
             const dados = ocorrencias.map((ocorrencia) => ({

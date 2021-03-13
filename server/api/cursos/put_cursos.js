@@ -16,12 +16,13 @@ module.exports = (req, res) => {
     
         dbCon.query(consulta, (erroDB) => {
             if (erroDB) {
-                const erro = JSON.stringify({
-                    cod: 502,
-                    mensagem: 'Erro ao atualizar dados na tabela cursos!'
+                console.log(erroDB.sqlMessage);
+                res.status(502).send({
+                    status: 'Falha',
+                    messagem: 'Erro ao atualizar dados na tabela cursos.'
                 });
 
-                throw new Error(erro);
+                return;
             }
     
             console.log(`PUT: Itens atualizados 1\nID: ${id}`);

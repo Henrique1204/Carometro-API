@@ -18,12 +18,13 @@ module.exports = (req, res) => {
     
         dbCon.query(consulta, (erroDB, resDB) => {
             if (erroDB) {
-                const erro = JSON.stringify({
-                    cod: 502,
-                    mensagem: 'Erro ao inserir dados na tabela ocorrencias!'
+                console.log(erroDB.sqlMessage);
+                res.status(502).send({
+                    status: 'Falha',
+                    messagem: 'Erro ao adicionar dados na tabela ocorrencias.'
                 });
 
-                throw new Error(erro);
+                return;
             }
     
             console.log(`POST: Itens adicionandos 1\nID: ${resDB.insertId}`);

@@ -38,7 +38,7 @@ module.exports = (req, res) => {
                     console.log(`ERRO: ${erroOcorrencias.sqlMessage}`);
                     res.status(502).send({
                         status: 'Falha',
-                        mensagem: 'Erro ao remover dados na tabela alunos!'
+                        mensagem: 'Erro ao remover dados na tabela ocorrencias!'
                     });
 
                     return;

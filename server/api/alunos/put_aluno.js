@@ -19,12 +19,13 @@ module.exports = (req, res) => {
     
         dbCon.query(consulta, (erroDB) => {
             if (erroDB) {
-                const erro = JSON.stringify({
-                    cod: 502,
-                    mensagem: 'Erro ao atualizar dados na tabela alunos!'
+                console.log(erroDB.sqlMessage);
+                res.status(502).send({
+                    status: 'Falha',
+                    messagem: 'Erro ao atualizar dados na tabela alunos.'
                 });
 
-                throw new Error(erro);
+                return;
             }
 
             unlink(foto_antiga, () => {});

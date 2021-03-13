@@ -7,12 +7,13 @@ module.exports = (req, res) => {
 
         dbCon.query(`SELECT * FROM cursos ${where} ORDER BY id`, (erroDB, cursos) => {
             if (erroDB) {
-                const erro = JSON.stringify({
-                    cod: 502,
+                console.log(erroDB.sqlMessage);
+                res.status(502).send({
+                    status: 'Falha',
                     messagem: 'Erro ao buscar por dados na tabela cursos.'
                 });
 
-                throw new Error(erro);
+                return;
             }
 
             console.log(`GET: Itens buscados ${cursos.length}`);
