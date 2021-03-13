@@ -22,6 +22,9 @@ rotasAlunos(app);
 const rotasOcorrencias = require('./api/ocorrencias/rotasOcorrencias.js');
 rotasOcorrencias(app);
 
+const rotasCursos = require('./api/cursos/rotasCursos.js');
+rotasCursos(app);
+
 // Rota para arquivos estáticos.
 app.use('/uploads', express.static('uploads'));
 
