@@ -9,12 +9,12 @@ module.exports = (req, res) => {
             throw new Error(erro);
         }
     
-        dbCon.query(`DELETE FROM ocorrencias WHERE id = ${id}`, (erroDB, resDB) => {
+        dbCon.query(`DELETE FROM turmas WHERE id = ${id}`, (erroDB, resDB) => {
             if (erroDB) {
                 console.log(erroDB.sqlMessage);
                 res.status(502).send({
                     status: 'Falha',
-                    mensagem: 'Erro ao remover dados na tabela ocorrencias!'
+                    mensagem: 'Erro ao remover dados na tabela turmas!'
                 });
 
                 return;
