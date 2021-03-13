@@ -11,12 +11,22 @@ module.exports = (req, res) => {
     
         dbCon.query(`DELETE FROM ocorrencias WHERE id = ${id}`, (erroDB) => {
             if (erroDB) {
-                const erro = JSON.stringify({
-                    cod: 502,
+                console.log(erroDB.sqlMessage);
+                res.status(502).send({
+                    status: 'Falha',
                     mensagem: 'Erro ao remover dados na tabela ocorrencias!'
                 });
 
-                throw new Error(erro);
+                return;
+            }
+
+            if (resDB.affectedRows === 0) {
+                res.status(406).send({
+                    status: 'Falha',
+                    mensagem: 'Dado informado já foi removido.'
+                });
+    
+                return;
             }
 
             console.log(`DELETE: Itens removidos 1\nID: ${id}`);
