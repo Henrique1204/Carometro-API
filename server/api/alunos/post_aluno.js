@@ -1,4 +1,4 @@
-const dbCon = require('../db.js');
+const dbCon = require('../../db.js');
 
 module.exports = (req, res) => {
     try {

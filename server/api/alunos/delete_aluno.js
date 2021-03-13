@@ -1,4 +1,4 @@
-const dbCon = require('../db.js');
+const dbCon = require('../../db.js');
 const { unlink } = require('fs');
 
 module.exports = (req, res) => {

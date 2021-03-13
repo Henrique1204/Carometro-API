@@ -11,37 +11,13 @@ app.use(express.json());
 const corsConfig = require('./corsCofnig.js');
 corsConfig(app);
 
-// Configurando multer para uploads.
-const multer = require('multer');
-
-const storage = multer.diskStorage({
-    destination(req, file, cb) {
-        cb(null, './uploads');
-    },
-    filename(req, file, cb) {
-        cb(null, `${new Date().toISOString().replace(/:/g, '-')}-${file.originalname}`);
-    }
-});
-
-const upload = multer({ storage });
-
 // Carregando banco de dados.
 const dbCon = require('./db.js');
 dbCon.connect();
 
 // Rotas da API.
-const getAlunos = require('./api/get_alunos.js');
-app.get('/alunos', getAlunos);
-app.get('/alunos/:id', getAlunos);
-
-const postAluno = require('./api/post_aluno.js');
-app.post('/alunos', upload.single('foto') , postAluno);
-
-const putAluno = require('./api/put_aluno.js');
-app.put('/alunos/:id', upload.single('foto') , putAluno);
-
-const deleteAluno = require('./api/delete_aluno.js');
-app.delete('/alunos/:id', upload.single('foto') , deleteAluno);
+const rotasAluanos = require('./api/alunos/rotasAlunos.js');
+rotasAluanos(app);
 
 // Rota para arquivos estáticos.
 app.use('/uploads', express.static('uploads'));

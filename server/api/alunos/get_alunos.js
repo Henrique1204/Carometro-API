@@ -1,4 +1,4 @@
-const dbCon = require('../db.js');
+const dbCon = require('../../db.js');
 
 const filtrarOcorrencias = (lista, id) => {
     const listaFiltrada = lista.filter(({ id_aluno }) => id_aluno === id);
