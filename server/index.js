@@ -12,8 +12,8 @@ const corsConfig = require('./corsCofnig.js');
 corsConfig(app);
 
 // Carregando banco de dados.
-const dbCon = require('./db.js');
-dbCon.connect();
+const { conexao } = require('./db.js');
+conexao.connect();
 
 // Rotas da API.
 const rotasAlunos = require('./api/alunos/rotasAlunos.js');

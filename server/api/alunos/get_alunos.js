@@ -1,4 +1,4 @@
-const dbCon = require('../../db.js');
+const { selectAlunos } = require('../../db.js');
 
 const filtrarOcorrencias = (lista, id) => {
     const listaFiltrada = lista.filter(({ id_aluno }) => id_aluno === id);
@@ -12,7 +12,7 @@ const filtrarOcorrencias = (lista, id) => {
     return listaFormatada;
 };
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     try {
         const { id } = req.params;
         const where = (id) ? `WHERE a.id = ${id}` : '';
@@ -22,38 +22,11 @@ module.exports = (req, res) => {
             FROM alunos AS a INNER JOIN turmas AS t ON a.id_turma = t.id ${where} ORDER by a.id`
         );
 
-        dbCon.query(consulta, (erroAlunos, alunos) => {
-            if (erroAlunos) {
-                console.log(erroAlunos.sqlMessage);
-                res.status(502).send({
-                    status: 'Falha',
-                    messagem: 'Erro ao buscar por dados na tabela alunos.'
-                });
+        const { ok, resposta } = await selectAlunos(consulta);
 
-                return;
-            }
+        if (!ok) throw new Error(JSON.stringify(resposta));
 
-            dbCon.query('SELECT * FROM ocorrencias', (erroOcorrencias, ocorrencias) => {
-                if (erroOcorrencias) {
-                    console.log(erroOcorrencias.sqlMessage);
-                    res.status(502).send({
-                        status: 'Falha',
-                        messagem: 'Erro ao buscar por dados na tabela ocorrencias.'
-                    });
-    
-                    return;
-                }
-                
-                const dados = alunos.map((aluno) => ({
-                    ...aluno,
-                    data_nascimento: aluno.data_nascimento.toISOString().split('T')[0],
-                    ocorrencias: filtrarOcorrencias(ocorrencias, aluno.id)
-                }));
-
-                console.log(`GET: Itens buscados ${dados.length}`);
-                res.status(200).send(dados);
-            });
-        });
+        res.status(200).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);
         res.status(cod).send({ status: "Falha", mensagem });
