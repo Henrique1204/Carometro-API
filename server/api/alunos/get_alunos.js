@@ -44,6 +44,7 @@ module.exports = (req, res) => {
                 
                 const dados = alunos.map((aluno) => ({
                     ...aluno,
+                    data_nascimento: aluno.data_nascimento.toISOString().split('T')[0],
                     ocorrencias: filtrarOcorrencias(ocorrencias, aluno.id)
                 }));
 

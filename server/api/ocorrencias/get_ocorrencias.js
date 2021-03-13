@@ -20,8 +20,13 @@ module.exports = (req, res) => {
                 throw new Error(erro);
             }
 
-            console.log(`GET: Itens buscados ${ocorrencias.length}`);
-            res.status(200).send(ocorrencias);
+            const dados = ocorrencias.map((ocorrencia) => ({
+                ...ocorrencia,
+                data_criacao: ocorrencia.data_criacao.toISOString().split('T')[0]
+            }));
+
+            console.log(`GET: Itens buscados ${dados.length}`);
+            res.status(200).send(dados);
         });
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);
