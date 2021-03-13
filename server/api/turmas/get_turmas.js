@@ -18,7 +18,7 @@ module.exports = (req, res) => {
         const where = (id) ? `WHERE t.id = ${id}` : '';
 
         const consulta = (
-            `SELECT t.id, t.nome, c.nome AS curso, c.periodo FROM turmas AS t 
+            `SELECT t.id, t.nome, t.formado, c.nome AS curso, c.periodo FROM turmas AS t 
             INNER JOIN cursos AS c ON t.id_curso = c.id ${where} ORDER BY t.id`
         );
 
@@ -46,6 +46,7 @@ module.exports = (req, res) => {
                 
                 const dados = turmas.map((turma) => ({
                     ...turma,
+                    formado: turma.formado === 1,
                     alunos: filtrarAlunos(alunos, turma.id)
                 }));
 
