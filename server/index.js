@@ -20,6 +20,9 @@ const getAlunos = require('./api/alunos_get.js');
 app.get('/alunos', getAlunos);
 app.get('/alunos/:id', getAlunos);
 
+const postAlunos = require('./api/alunos_post.js');
+app.post('/alunos', postAlunos);
+
 // Inicializando o servidor.
 const server = http.createServer(app); 
 server.listen(8000, '127.0.0.1');
