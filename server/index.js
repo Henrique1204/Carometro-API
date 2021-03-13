@@ -16,8 +16,11 @@ const dbCon = require('./db.js');
 dbCon.connect();
 
 // Rotas da API.
-const rotasAluanos = require('./api/alunos/rotasAlunos.js');
-rotasAluanos(app);
+const rotasAlunos = require('./api/alunos/rotasAlunos.js');
+rotasAlunos(app);
+
+const rotasOcorrencias = require('./api/ocorrencias/rotasOcorrencias.js');
+rotasOcorrencias(app);
 
 // Rota para arquivos estáticos.
 app.use('/uploads', express.static('uploads'));
