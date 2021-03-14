@@ -1,9 +1,13 @@
 const { select, insert } = require('../../../db/consultas.js');
+const moverArquivo = require('../../../util/moverArquivo.js');
+const { unlink } = require('fs');
 
 module.exports = async (req, res) => {
+    let foto;
+
     try {
         const { nome, email, telefone, data_nascimento, id_turma } = req.body;
-        const foto = req.file?.path.replace('\\', '/');
+        foto = req.file?.path.replace('\\', '/');
 
         if (!nome || !email || !telefone || !data_nascimento || !foto || !id_turma ) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
@@ -17,9 +21,8 @@ module.exports = async (req, res) => {
 
         const consultaSelect = `SELECT * FROM alunos WHERE email = '${email}'`;
 
-        const consultaInsert = (
-            `INSERT INTO alunos (id, nome, email, telefone, data_nascimento, foto, id_turma) VALUES
-            (null, '${nome}', '${email}', '${telefone}', '${data_nascimento}', '${foto}', '${id_turma}')`
+        const consultaTurma = (
+            `SELECT t.nome FROM alunos INNER JOIN turmas as t ON alunos.id_turma = t.id`
         );
 
         const resSelect = await select(consultaSelect, 'alunos');
@@ -30,11 +33,23 @@ module.exports = async (req, res) => {
             throw new Error(JSON.stringify(erro));
         }
 
+        const resTurma = await select(consultaTurma, 'turmas');
+        if (!resTurma.ok) throw new Error(JSON.stringify(resTurma.resposta));
+
+        const arquivo = await moverArquivo(resTurma.resposta[0].nome, foto);
+        foto = arquivo.foto;
+
+        const consultaInsert = (
+            `INSERT INTO alunos (id, nome, email, telefone, data_nascimento, foto, id_turma) VALUES
+            (null, '${nome}', '${email}', '${telefone}', '${data_nascimento}', '${foto}', '${id_turma}')`
+        );
+
         const resInsert = await insert(consultaInsert, 'alunos');
         if (!resInsert.ok) throw new Error(JSON.stringify(resInsert.resposta));
 
         res.status(201).send(resInsert.resposta);
     } catch ({ message }) {
+        unlink(foto, () => {});
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 
         if (erroSQL) res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
