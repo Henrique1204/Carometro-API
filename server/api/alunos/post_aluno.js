@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
 
         const { ok, resposta } = await postAlunos(consulta);
 
-        if (!ok) throw new Error(resposta);
+        if (!ok) throw new Error(JSON.stringify(resposta));
 
         res.status(201).send(resposta);
     } catch ({ message }) {

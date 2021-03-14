@@ -108,10 +108,30 @@ const postAlunos = (consulta) => {
     });
 }
 
+const putAlunos = (consulta, foto_antiga) => {
+    return new Promise((resolve) => {
+        dbCon.query(consulta, (erroDB) => {
+            if (erroDB) {
+                console.log(`ERRO: ${erroAlunos.sqlMessage}`);
+                const erro = { cod: 502, mensagem: 'Erro ao atualizar dados na tabela alunos.' };
+                resolve({ ok: false, resposta: erro });
+                return;
+            }
+
+            unlink(foto_antiga, () => {});
+    
+            console.log(`PUT: Itens atualizados 1`);
+            const resposta = { status: 'Sucesso', mensagem: 'Dados adicionados com sucesso!' };
+            resolve({ ok: true, resposta });
+        });
+    })
+}
+
 // Exportando a conexão do banco de dados.
 module.exports = {
     conexao: dbCon,
     selectAlunos,
     deleteAlunos,
-    postAlunos
+    postAlunos,
+    putAlunos
 };

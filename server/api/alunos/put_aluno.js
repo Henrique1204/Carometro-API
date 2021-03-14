@@ -1,7 +1,6 @@
-const dbCon = require('../../db.js');
-const { unlink } = require('fs');
+const { putAlunos } = require('../../db.js');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     try {
         const { nome, email, telefone, id_turma, foto_antiga } = req.body;
         const foto = req.file?.path.replace('\\', '/');
@@ -17,22 +16,11 @@ module.exports = (req, res) => {
             foto = '${foto}', id_turma = '${id_turma}' WHERE id = ${id}`
         );
     
-        dbCon.query(consulta, (erroDB) => {
-            if (erroDB) {
-                console.log(erroDB.sqlMessage);
-                res.status(502).send({
-                    status: 'Falha',
-                    messagem: 'Erro ao atualizar dados na tabela alunos.'
-                });
+        const { ok, resposta } = await putAlunos(consulta, foto_antiga);
 
-                return;
-            }
+        if (!ok) throw new Error(JSON.stringify(resposta));
 
-            unlink(foto_antiga, () => {});
-    
-            console.log(`PUT: Itens atualizados 1\nID: ${id}`);
-            res.status(201).send({ status: 'Sucesso', mensagem: 'Dados atualizados com sucesso!' });
-        });
+        res.status(201).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);
         res.status(cod).send({ status: 'Falha', mensagem });
