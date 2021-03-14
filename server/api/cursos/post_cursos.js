@@ -1,6 +1,6 @@
-const conexaoDB = require('../../db/conexao.js');
+const { insert } = require('../../db/consultas.js');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     try {
         const { nome, periodo } = req.body;
 
@@ -13,20 +13,11 @@ module.exports = (req, res) => {
             `INSERT INTO cursos (id, nome, periodo) VALUES (null, '${nome}', '${periodo}')`
         );
 
-        conexaoDB.query(consulta, (erroDB, resDB) => {
-            if (erroDB) {
-                console.log(erroDB.sqlMessage);
-                res.status(502).send({
-                    status: 'Falha',
-                    messagem: 'Erro ao adicionar dados na tabela cursos.'
-                });
+        const { ok, resposta } = await insert(consulta, 'cursos');
 
-                return;
-            }
-    
-            console.log(`POST: Itens adicionandos 1\nID: ${resDB.insertId}`);
-            res.status(201).send({ status: 'Sucesso', mensagem: 'Dados adicionados com sucesso!' });
-        });
+        if (!ok) throw new Error(JSON.stringify(resposta));
+
+        res.status(201).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);
         res.status(cod).send({ status: 'Falha', mensagem });

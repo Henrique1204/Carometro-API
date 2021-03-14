@@ -1,4 +1,4 @@
-const { postAlunos } = require('../../db/consultas.js');
+const { insert } = require('../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {
@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
             (null, '${nome}', '${email}', '${telefone}', '${data_nascimento}', '${foto}', '${id_turma}')`
         );
 
-        const { ok, resposta } = await postAlunos(consulta);
+        const { ok, resposta } = await insert(consulta, 'alunos');
 
         if (!ok) throw new Error(JSON.stringify(resposta));
 

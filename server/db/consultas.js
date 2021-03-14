@@ -79,16 +79,17 @@ const deleteAlunos = (consulta, foto_antiga, id) => {
     });
 };
 
-const postAlunos = (consulta) => {
+const insert = (consulta, tabela) => {
     return new Promise((resolve) => {
         conexaoDB.query(consulta, (erroDB, resDB) => {
             if (erroDB) {
                 console.log(`ERRO: ${erroAlunos.sqlMessage}`);
-                const erro = { cod: 502, mensagem: 'Erro ao adicionar dados na tabela alunos.' };
+                const erro = { cod: 502, mensagem: `Erro ao adicionar dados na tabela ${tabela}.` };
                 resolve({ ok: false, resposta: erro });
                 return;
             }
-    
+
+            console.log(`POST na tabela ${tabela} | ID criado: ${resDB.insertId}`)
             const resposta = { status: 'Sucesso', mensagem: 'Dados adicionados com sucesso!' };
             resolve({ ok: true, resposta });
         });
@@ -117,8 +118,8 @@ const putAlunos = (consulta, foto_antiga) => {
 // Exportando a conexão do banco de dados.
 module.exports = {
     select,
+    insert,
     selectAlunos,
     deleteAlunos,
-    postAlunos,
     putAlunos
 };
