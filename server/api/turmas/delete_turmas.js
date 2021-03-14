@@ -1,4 +1,4 @@
-const { deleteSQL } = require('../../db/consultas.js');
+const { update } = require('../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {
@@ -9,9 +9,9 @@ module.exports = async (req, res) => {
             throw new Error(erro);
         }
     
-        const consulta = `DELETE FROM turmas WHERE id = ${id}`;
+        const consulta = `UPDATE turmas SET formado = 1 WHERE id = ${id}`;
 
-        const { ok, resposta } = await deleteSQL(consulta, 'turmas', id);
+        const { ok, resposta } = await update(consulta, 'turmas', id);
         if (!ok) throw new Error(JSON.stringify(resposta));
 
         res.status(201).send(resposta);

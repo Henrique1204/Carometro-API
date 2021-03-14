@@ -2,10 +2,10 @@ const { update } = require('../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {
-        const { titulo, conteudo, criado_por, id_aluno } = req.body;
+        const { titulo, conteudo } = req.body;
         const { id } = req.params;
 
-        if (!titulo || !conteudo || !criado_por || !id_aluno || !id) {
+        if (!titulo || !conteudo || !id) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
             throw new Error(erro);
         }

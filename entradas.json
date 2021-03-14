@@ -11,22 +11,14 @@
     },
     "post/turmas": {
         "nome": "1MN",
-        "id_curso": 3,
-        "formado": 0
-    },
-    "put/cursos": {
-        "nome": "Qualidade",
-        "periodo": "manhã"
+        "id_curso": 3
     },
     "put/ocorrencias": {
         "titulo": "Briga com professor.",
-        "conteudo": "O aluno brigou com um professor.",
-        "criado_por": "Átila",
-        "id_aluno": 1
+        "conteudo": "O aluno brigou com um professor."
     },
     "put/turmas": {
-        "nome": "1QM",
-        "formado": 0
+        "nome": "1QM"
     },
     "delete/alunos": {
         "foto_antiga": "caminho/foto.png"

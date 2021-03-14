@@ -2,16 +2,16 @@ const { insert } = require('../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {
-        const { nome, id_curso, formado } = req.body;
+        const { nome, id_curso } = req.body;
 
-        if (!nome || !id_curso || (formado !== 0 && formado !== 1)) {
+        if (!nome || !id_curso) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
             throw new Error(erro);
         }
 
         const consulta = (
             `INSERT INTO turmas (id, nome, id_curso, formado) 
-            VALUES (null, '${nome}', '${id_curso}', ${formado})`
+            VALUES (null, '${nome}', '${id_curso}', 0)`
         );
 
         const { ok, resposta } = await insert(consulta, 'turmas');
