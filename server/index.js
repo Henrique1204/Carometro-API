@@ -18,13 +18,17 @@ conexaoDB.connect();
 // Middleware para validar rotas.
 const validarRotas = require('./util/validarRotas.js');
 
-// Rotas da API.
+// Rotas de autenticação.
+const rotaLogin = require('./api/login.js');
+app.post('/login', rotaLogin);
+
 const rotaValidarToken = require('./api/validarToken.js');
 app.post('/validarToken', validarRotas, rotaValidarToken);
 
 const rotaCadastro = require('./api/cadastro.js');
 app.post('/cadastro', validarRotas, rotaCadastro);
 
+// Rotas da API.
 const rotasAlunos = require('./api/alunos/rotasAlunos.js');
 rotasAlunos(app);
 
@@ -36,9 +40,6 @@ rotasCursos(app);
 
 const rotasTurmas = require('./api/turmas/rotasTurmas.js');
 rotasTurmas(app);
-
-const rotaLogin = require('./api/login.js');
-app.post('/login', rotaLogin);
 
 // Rota para arquivos estáticos.
 app.use('/uploads', express.static('uploads'));
