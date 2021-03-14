@@ -1,21 +1,18 @@
-const { update } = require('../../db/consultas.js');
+const { update } = require('../../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {
-        const { titulo, conteudo } = req.body;
+        const { nome } = req.body;
         const { id } = req.params;
 
-        if (!titulo || !conteudo || !id) {
+        if (!nome || !id) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
             throw new Error(erro);
         }
 
-        const consulta = (
-            `UPDATE ocorrencias SET titulo = '${titulo}', conteudo = '${conteudo}', criado_por = '${criado_por}', 
-            id_aluno = '${id_aluno}' WHERE id = ${id}`
-        );
+        const consulta = `UPDATE turmas SET nome = '${nome}' WHERE id = ${id}`;
     
-        const { ok, resposta } = await update(consulta, 'ocorrencias', id);
+        const { ok, resposta } = await update(consulta, 'turmas', id);
 
         if (!ok) throw new Error(JSON.stringify(resposta));
 

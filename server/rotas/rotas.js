@@ -4,11 +4,11 @@ const routerAut = express.Router();
 const routerAPI = express.Router();
 
 // Puxando rotas de autenticação.
-const rotasAut = require('./api/rotasAutenticacao.js');
+const rotasAut = require('./aut/rotasAutenticacao.js');
 rotasAut(routerAut);
 
 // Método para validar acesso das rotas.
-const validarRotas = require('./util/validarRotas.js');
+const validarRotas = require('../util/validarRotas.js');
 routerAPI.use(validarRotas);
 
 // Puxando rotas da API.

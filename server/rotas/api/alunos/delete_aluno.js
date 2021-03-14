@@ -1,4 +1,4 @@
-const { deleteSQL } = require('../../db/consultas.js');
+const { deleteSQL } = require('../../../db/consultas.js');
 const { unlink } = require('fs');
 
 

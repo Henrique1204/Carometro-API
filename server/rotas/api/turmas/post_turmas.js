@@ -1,4 +1,4 @@
-const { insert } = require('../../db/consultas.js');
+const { insert } = require('../../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {

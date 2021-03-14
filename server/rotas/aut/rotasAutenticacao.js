@@ -4,7 +4,7 @@ const rotaValidarToken = require('./validarToken.js');
 const rotaCadastro = require('./cadastro.js');
 
 // Middleware para validar rotas.
-const validarRotas = require('../util/validarRotas.js');
+const validarRotas = require('../../util/validarRotas.js');
 
 module.exports = (router) => {
     router.post('/login', rotaLogin);

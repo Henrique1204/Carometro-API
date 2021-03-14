@@ -1,4 +1,4 @@
-const { select } = require('../db/consultas.js');
+const { select } = require('../../db/consultas.js');
 const jwt = require('jsonwebtoken');
 //Blibioteca para criptografar senha.
 const { SHA224 } = require("sha2");

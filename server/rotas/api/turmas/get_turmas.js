@@ -1,5 +1,5 @@
-const { select, selectAlunos } = require('../../db/consultas.js');
-const { filtrarAlunos } = require('../../util/filtros.js');
+const { select, selectAlunos } = require('../../../db/consultas.js');
+const { filtrarAlunos } = require('../../../util/filtros.js');
 
 module.exports = async (req, res) => {
     try {

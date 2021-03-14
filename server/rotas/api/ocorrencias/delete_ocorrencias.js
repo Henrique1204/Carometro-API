@@ -1,20 +1,17 @@
-const { insert } = require('../../db/consultas.js');
+const { deleteSQL } = require('../../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {
-        const { nome, periodo } = req.body;
+        const { id } = req.params;
 
-        if (!nome || !periodo ) {
+        if (!id) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
             throw new Error(erro);
         }
+    
+        const consulta = `DELETE FROM ocorrencias WHERE id = ${id}`;
 
-        const consulta = (
-            `INSERT INTO cursos (id, nome, periodo) VALUES (null, '${nome}', '${periodo}')`
-        );
-
-        const { ok, resposta } = await insert(consulta, 'cursos');
-
+        const { ok, resposta } = await deleteSQL(consulta, 'ocorrencias', id);
         if (!ok) throw new Error(JSON.stringify(resposta));
 
         res.status(201).send(resposta);

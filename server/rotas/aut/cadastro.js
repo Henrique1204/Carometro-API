@@ -2,35 +2,36 @@ const { select, insert } = require('../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {
-        const { nome, email, telefone, data_nascimento, id_turma } = req.body;
-        const foto = req.file?.path.replace('\\', '/');
+        const { usuario, email, senha, isAdmin } = req.body;
 
-        if (!nome || !email || !telefone || !data_nascimento || !foto || !id_turma ) {
+        if (!usuario || !email || !senha) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
             throw new Error(erro);
         }
 
-        if (isNaN(id_turma)) {
+        if (isAdmin !== 0 && isAdmin !== 1) {
             const erro = JSON.stringify({ cod: 406, mensagem: "Dados inválidos!" });
             throw new Error(erro);
         }
 
-        const consultaSelect = `SELECT * FROM alunos WHERE email = '${email}'`;
-
-        const consultaInsert = (
-            `INSERT INTO alunos (id, nome, email, telefone, data_nascimento, foto, id_turma) VALUES
-            (null, '${nome}', '${email}', '${telefone}', '${data_nascimento}', '${foto}', '${id_turma}')`
+        const consultaSelect = (
+            `SELECT * FROM usuarios WHERE usuario = '${usuario}' OR email = '${email}'`
         );
 
-        const resSelect = await select(consultaSelect, 'alunos');
+        const consultInsert = (
+            `INSERT INTO usuarios (id, usuario, email, senha, isAdmin) VALUES 
+            (null, '${usuario}', '${email}', SHA2('${senha.toString()}', 224), ${isAdmin})`
+        );
+
+        const resSelect = await select(consultaSelect, 'usuarios');
         if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
 
         if (resSelect.resposta.length !== 0) {
-            const erro = { cod: 422, mensagem: 'Aluno já existe!' };
+            const erro = { cod: 422, mensagem: 'Usuário já existe!' };
             throw new Error(JSON.stringify(erro));
         }
 
-        const resInsert = await insert(consultaInsert, 'alunos');
+        const resInsert = await insert(consultInsert, 'usuarios');
         if (!resInsert.ok) throw new Error(JSON.stringify(resInsert.resposta));
 
         res.status(201).send(resInsert.resposta);

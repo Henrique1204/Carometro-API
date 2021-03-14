@@ -1,30 +1,32 @@
-const { insert } = require('../../db/consultas.js');
+const { update } = require('../../../db/consultas.js');
+const { unlink } = require('fs');
 
 module.exports = async (req, res) => {
     try {
-        const { titulo, conteudo, criado_por, id_aluno } = req.body;
+        const { nome, email, telefone, id_turma, foto_antiga } = req.body;
+        const foto = req.file?.path.replace('\\', '/');
+        const { id } = req.params;
 
-        if (!titulo || !conteudo || !criado_por || !id_aluno ) {
+        if (!nome || !email || !telefone || !foto || !id_turma || !id || !foto_antiga) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
             throw new Error(erro);
         }
 
-        if (isNaN(id_aluno)) {
+        if (isNaN(id_turma)) {
             const erro = JSON.stringify({ cod: 406, mensagem: "Dados inválidos!" });
             throw new Error(erro);
         }
 
-        const data = new Date().toISOString().split('T')[0];
-
         const consulta = (
-            `INSERT INTO ocorrencias (id, titulo, conteudo, data_criacao, criado_por, id_aluno) VALUES
-            (null, '${titulo}', '${conteudo}', '${data}', '${criado_por}', ${id_aluno})`
+            `UPDATE alunos SET nome = '${nome}', email = '${email}', telefone = '${telefone}', 
+            foto = '${foto}', id_turma = '${id_turma}' WHERE id = ${id}`
         );
     
-        const { ok, resposta } = await insert(consulta, 'ocorrencias');
+        const { ok, resposta } = await update(consulta, 'alunos', id);
 
         if (!ok) throw new Error(JSON.stringify(resposta));
 
+        unlink(foto_antiga, () => {});
         res.status(201).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);

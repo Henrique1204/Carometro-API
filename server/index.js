@@ -16,7 +16,7 @@ const conexaoDB = require('./db/conexao.js');
 conexaoDB.connect();
 
 // Adicionando rotas da aplicação.
-const rotas = require('./rotas');
+const rotas = require('./rotas/rotas.js');
 rotas(app);
 
 // Rota para arquivos estáticos.

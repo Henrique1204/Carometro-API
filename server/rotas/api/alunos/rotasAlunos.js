@@ -4,7 +4,7 @@ const postAluno = require('./post_aluno.js');
 const putAluno = require('./put_aluno.js');
 const deleteAluno = require('./delete_aluno.js');
 // Multer.
-const upload = require('../../multer.js');
+const upload = require('../../../multer.js');
 
 module.exports = (router) => {
     // GET
