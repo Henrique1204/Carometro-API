@@ -1,4 +1,14 @@
 {
+    "post/login": {
+        "usuario": "Átila OU atila@gmail.com",
+        "senha": "1234"
+    },
+    "post/cadastro": {
+        "usuario": "Paulo",
+        "email": "paulo@gmail.com",
+        "senha": "5678",
+        "isAdmin": 0
+    },
     "post/cursos": {
         "nome": "Mecânica",
         "periodo": "noite"
