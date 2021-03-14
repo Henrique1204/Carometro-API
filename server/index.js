@@ -28,6 +28,9 @@ rotasCursos(app);
 const rotasTurmas = require('./api/turmas/rotasTurmas.js');
 rotasTurmas(app);
 
+const rotaLogin = require('./api/login.js');
+app.post('/login', rotaLogin);
+
 // Rota para arquivos estáticos.
 app.use('/uploads', express.static('uploads'));
 

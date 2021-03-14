@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
         isValido = false;
 
         if (!token) {
-            const erro = { cod: 401, mensagem: 'Você não tem o token.' }
+            const erro = { cod: 401, mensagem: 'Token não informado.' };
             throw new Error(JSON.stringify(erro));
         }
 
@@ -28,7 +28,10 @@ module.exports = (req, res, next) => {
         });
 
         if (!isValido) {
-            const erro = { cod: 500, mensagem: 'Falha ao autenticar o token.' }
+            const erro = {
+                cod: 500,
+                mensagem: 'Você não tem autorização necessária para continuar.'
+            };
             throw new Error(JSON.stringify(erro));
         }
 

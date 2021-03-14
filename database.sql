@@ -70,8 +70,8 @@ INSERT INTO turmas (id, nome, id_curso, formado) VALUES
 (null, '2DT', 2, 0);
 
 INSERT INTO usuarios (id, usuario, email, senha, isAdmin) VALUES 
-(null, "Átila", "atila@gmail.com", SHA2("1234", 224), 0),
-(null, "Alexandre", "alexandre@gmail.com", SHA2("4321", 224), 1);
+(null, 'Átila', 'atila@gmail.com', SHA2('1234', 224), 0),
+(null, 'Alexandre', 'alexandre@gmail.com', SHA2('4321', 224), 1);
 
 CREATE USER IF NOT EXISTS 'carometro'@'localhost' IDENTIFIED BY 'senai115';
 GRANT ALL PRIVILEGES ON * . * TO 'carometro'@'localhost';
