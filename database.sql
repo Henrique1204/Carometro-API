@@ -41,6 +41,16 @@ CREATE TABLE turmas (
 	PRIMARY KEY (id)
 );
 
+DROP TABLE IF EXISTS usuarios;
+CREATE TABLE usuarios (
+	id int NOT NULL AUTO_INCREMENT,
+	usuario varchar(255) NOT NULL,
+	email varchar(255) NOT NULL,
+	senha varchar(255) NOT NULL,
+	isAdmin tinyint(1) NOT NULL,
+	PRIMARY KEY (id)
+);
+
 INSERT INTO alunos (id, nome, email, telefone, data_nascimento, foto, id_turma) VALUES 
 (null, 'Paulo', 'paulo@gmail.com', '11 987654321', '2001-09-20', 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg', 1),
 (null, 'Henrique', 'henrique@gmail.com', '11 987654321', '2001-09-20', 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg', 1),
@@ -58,6 +68,10 @@ INSERT INTO ocorrencias (id, data_criacao, titulo, conteudo, criado_por, id_alun
 INSERT INTO turmas (id, nome, id_curso, formado) VALUES 
 (null, '1DT', 1, 0),
 (null, '2DT', 2, 0);
+
+INSERT INTO usuarios (id, usuario, email, senha, isAdmin) VALUES 
+(null, "Átila", "atila@gmail.com", SHA2("1234", 224), 0),
+(null, "Alexandre", "alexandre@gmail.com", SHA2("4321", 224), 1);
 
 CREATE USER IF NOT EXISTS 'carometro'@'localhost' IDENTIFIED BY 'senai115';
 GRANT ALL PRIVILEGES ON * . * TO 'carometro'@'localhost';
