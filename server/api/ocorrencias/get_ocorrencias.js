@@ -21,7 +21,9 @@ module.exports = async (req, res) => {
 
         res.status(200).send(dados);
     } catch ({ message }) {
-        const { cod, mensagem } = JSON.parse(message);
-        res.status(cod).send({ status: "Falha", mensagem });
+        const { cod, mensagem, erroSQL } = JSON.parse(message);
+
+        if (erroSQL) res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+        else res.status(cod).send({ status: 'Falha', mensagem });
     }
 };

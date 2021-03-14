@@ -5,8 +5,12 @@ const select = (consulta, tabela) => {
     return new Promise((resolve) => {
         conexaoDB.query(consulta, (erroDB, resposta) => {
             if (erroDB) {
-                console.log(erroDB.sqlMessage);
-                const erro = { cod: 502, mensagem: `Erro ao buscar por dados na tabela ${tabela}.` };
+                const erro = {
+                    cod: 502,
+                    mensagem: `Erro ao buscar por dados na tabela ${tabela}.`,
+                    erroSQL: erroDB.sqlMessage
+                };
+
                 resolve({ ok: false, resposta: erro });
                 return;
             }
@@ -21,8 +25,12 @@ const insert = (consulta, tabela) => {
     return new Promise((resolve) => {
         conexaoDB.query(consulta, (erroDB, resDB) => {
             if (erroDB) {
-                console.log(`ERRO: ${erroDB.sqlMessage}`);
-                const erro = { cod: 502, mensagem: `Erro ao adicionar dados na tabela ${tabela}.` };
+                const erro = {
+                    cod: 502,
+                    mensagem: `Erro ao adicionar dados na tabela ${tabela}.`,
+                    erroSQL: erroDB.sqlMessage
+                };
+
                 resolve({ ok: false, resposta: erro });
                 return;
             }
@@ -38,8 +46,12 @@ const update = (consulta, tabela, id) => {
     return new Promise((resolve) => {
         conexaoDB.query(consulta, (erroDB) => {
             if (erroDB) {
-                console.log(`ERRO: ${erroDB.sqlMessage}`);
-                const erro = { cod: 502, mensagem: `Erro ao atualizar dados na tabela ${tabela}.` };
+                const erro = {
+                    cod: 502,
+                    mensagem: `Erro ao atualizar dados na tabela ${tabela}.`,
+                    erroSQL: erroDB.sqlMessage
+                };
+
                 resolve({ ok: false, resposta: erro });
                 return;
             }
@@ -55,8 +67,12 @@ const deleteSQL = (consulta, tabela, id) => {
     return new Promise((resolve) => {
         conexaoDB.query(consulta, (erroDB, resDB) => {
             if (erroDB) {
-                console.log(`ERRO: ${erroDB.sqlMessage}`);
-                const erro = { cod: 502, mensagem: `Erro ao remover dados na tabela ${tabela}!` };
+                const erro = {
+                    cod: 502,
+                    mensagem: `Erro ao remover dados na tabela ${tabela}!`,
+                    erroSQL: erroDB.sqlMessage
+                };
+
                 resolve({ ok: false, resposta: erro });
                 return;
             }
