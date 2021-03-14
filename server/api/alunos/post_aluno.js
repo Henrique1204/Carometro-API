@@ -1,6 +1,6 @@
-const dbCon = require('../../db.js');
+const { postAlunos } = require('../../db.js');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     try {
         const { nome, email, telefone, data_nascimento, id_turma } = req.body;
         const foto = req.file?.path.replace('\\', '/');
@@ -14,21 +14,12 @@ module.exports = (req, res) => {
             `INSERT INTO alunos (id, nome, email, telefone, data_nascimento, foto, id_turma) VALUES
             (null, '${nome}', '${email}', '${telefone}', '${data_nascimento}', '${foto}', '${id_turma}')`
         );
-    
-        dbCon.query(consulta, (erroDB, resDB) => {
-            if (erroDB) {
-                console.log(erroDB.sqlMessage);
-                res.status(502).send({
-                    status: 'Falha',
-                    messagem: 'Erro ao adicionar dados na tabela alunos.'
-                });
 
-                return;
-            }
-    
-            console.log(`POST: Itens adicionandos 1\nID: ${resDB.insertId}`);
-            res.status(201).send({ status: 'Sucesso', mensagem: 'Dados adicionados com sucesso!' });
-        });
+        const { ok, resposta } = await postAlunos(consulta);
+
+        if (!ok) throw new Error(resposta);
+
+        res.status(201).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);
         res.status(cod).send({ status: 'Falha', mensagem });

@@ -57,7 +57,7 @@ const selectAlunos = (consulta) => {
     });
 };
 
-const deleteAlunos = (consulta, foto_antiga) => {
+const deleteAlunos = (consulta, foto_antiga, id) => {
     return new Promise((resolve) => {
         dbCon.query(consulta, (erroAlunos, resAlunos) => {
             if (erroAlunos) {
@@ -89,11 +89,29 @@ const deleteAlunos = (consulta, foto_antiga) => {
             });
         });
     });
+};
+
+const postAlunos = (consulta) => {
+    return new Promise((resolve) => {
+        dbCon.query(consulta, (erroDB, resDB) => {
+            if (erroDB) {
+                console.log(`ERRO: ${erroAlunos.sqlMessage}`);
+                const erro = { cod: 502, mensagem: 'Erro ao adicionar dados na tabela alunos.' };
+                resolve({ ok: false, resposta: erro });
+                return;
+            }
+    
+            console.log(`POST: Itens adicionandos 1\nID: ${resDB.insertId}`);
+            const resposta = { status: 'Sucesso', mensagem: 'Dados adicionados com sucesso!' };
+            resolve({ ok: true, resposta });
+        });
+    });
 }
 
 // Exportando a conexão do banco de dados.
 module.exports = {
     conexao: dbCon,
     selectAlunos,
-    deleteAlunos
+    deleteAlunos,
+    postAlunos
 };

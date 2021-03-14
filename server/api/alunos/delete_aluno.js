@@ -12,12 +12,13 @@ module.exports = async (req, res) => {
 
         const { ok, resposta } = await deleteAlunos(
             `DELETE FROM alunos WHERE id = ${id}`,
-            foto_antiga
+            foto_antiga,
+            id
         );
 
         if (!ok) throw new Error(JSON.stringify(resposta));
 
-        res.status(200).send(resposta);
+        res.status(201).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);
         res.status(cod).send({ status: 'Falha', mensagem });
