@@ -1,4 +1,4 @@
-const dbCon = require('../../db.js');
+const conexaoDB = require('../../db/conexao.js');
 
 module.exports = (req, res) => {
     try {
@@ -9,7 +9,7 @@ module.exports = (req, res) => {
             throw new Error(erro);
         }
     
-        dbCon.query(`DELETE FROM ocorrencias WHERE id = ${id}`, (erroDB, resDB) => {
+        conexaoDB.query(`DELETE FROM ocorrencias WHERE id = ${id}`, (erroDB, resDB) => {
             if (erroDB) {
                 console.log(erroDB.sqlMessage);
                 res.status(502).send({

@@ -1,4 +1,4 @@
-const { deleteAlunos } = require('../../db.js');
+const { deleteAlunos } = require('../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {

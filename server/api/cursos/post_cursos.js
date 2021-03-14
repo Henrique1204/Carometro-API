@@ -1,4 +1,4 @@
-const dbCon = require('../../db.js');
+const conexaoDB = require('../../db/conexao.js');
 
 module.exports = (req, res) => {
     try {
@@ -13,7 +13,7 @@ module.exports = (req, res) => {
             `INSERT INTO cursos (id, nome, periodo) VALUES (null, '${nome}', '${periodo}')`
         );
 
-        dbCon.query(consulta, (erroDB, resDB) => {
+        conexaoDB.query(consulta, (erroDB, resDB) => {
             if (erroDB) {
                 console.log(erroDB.sqlMessage);
                 res.status(502).send({

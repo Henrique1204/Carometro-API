@@ -1,4 +1,4 @@
-const dbCon = require('../../db.js');
+const conexaoDB = require('../../db/conexao.js');
 
 const filtrarOcorrencias = (lista, id) => {
     const listaFiltrada = lista.filter(({ id_aluno }) => id_aluno === id);
@@ -36,7 +36,7 @@ module.exports = (req, res) => {
             INNER JOIN cursos AS c ON t.id_curso = c.id ${where} ORDER BY t.id`
         );
 
-        dbCon.query(consulta, (erroTurmas, turmas) => {
+        conexaoDB.query(consulta, (erroTurmas, turmas) => {
             if (erroTurmas) {
                 console.log(erroTurmas.sqlMessage);
                 res.status(502).send({
@@ -47,7 +47,7 @@ module.exports = (req, res) => {
                 return;
             }
 
-            dbCon.query('SELECT * FROM alunos', (erroAlunos, alunos) => {
+            conexaoDB.query('SELECT * FROM alunos', (erroAlunos, alunos) => {
                 if (erroAlunos) {
                     console.log(erroAlunos.sqlMessage);
                     res.status(502).send({
@@ -58,7 +58,7 @@ module.exports = (req, res) => {
                     return;
                 }
 
-                dbCon.query('SELECT * FROM ocorrencias', (erroOcorrencias, ocorrencias) => {
+                conexaoDB.query('SELECT * FROM ocorrencias', (erroOcorrencias, ocorrencias) => {
                     if (erroOcorrencias) {
                         console.log(erroOcorrencias.sqlMessage);
                         res.status(502).send({

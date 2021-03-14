@@ -1,4 +1,4 @@
-const dbCon = require('../../db.js');
+const conexaoDB = require('../../db/conexao.js');
 
 module.exports = (req, res) => {
     try {
@@ -14,7 +14,7 @@ module.exports = (req, res) => {
             `UPDATE turmas SET nome = '${nome}', formado = '${formado}' WHERE id = ${id}`
         );
     
-        dbCon.query(consulta, (erroDB) => {
+        conexaoDB.query(consulta, (erroDB) => {
             if (erroDB) {
                 console.log(erroDB.sqlMessage);
                 res.status(502).send({

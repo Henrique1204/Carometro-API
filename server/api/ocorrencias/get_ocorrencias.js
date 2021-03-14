@@ -1,4 +1,4 @@
-const dbCon = require('../../db.js');
+const conexaoDB = require('../../db/conexao.js');
 
 module.exports = (req, res) => {
     try {
@@ -10,7 +10,7 @@ module.exports = (req, res) => {
             FROM ocorrencias as o INNER JOIN alunos ON alunos.id = o.id_aluno ${where} ORDER by o.id`
         );
 
-        dbCon.query(consulta, (erroDB, ocorrencias) => {
+        conexaoDB.query(consulta, (erroDB, ocorrencias) => {
             if (erroDB) {
                 console.log(erroDB.sqlMessage);
                 res.status(502).send({

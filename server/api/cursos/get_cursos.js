@@ -1,11 +1,11 @@
-const dbCon = require('../../db.js');
+const conexaoDB = require('../../db/conexao.js');
 
 module.exports = (req, res) => {
     try {
         const { id } = req.params;
         const where = (id) ? `WHERE id = ${id}` : '';
 
-        dbCon.query(`SELECT * FROM cursos ${where} ORDER BY id`, (erroDB, cursos) => {
+        conexaoDB.query(`SELECT * FROM cursos ${where} ORDER BY id`, (erroDB, cursos) => {
             if (erroDB) {
                 console.log(erroDB.sqlMessage);
                 res.status(502).send({
