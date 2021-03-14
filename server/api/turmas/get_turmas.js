@@ -1,19 +1,5 @@
 const { select, selectAlunos } = require('../../db/consultas.js');
-
-const filtrarAlunos = (lista, id) => {
-    const listaFiltrada = lista.filter(({ id_turma }) => id_turma === id);
-    const listaFormatada = listaFiltrada.map((item) => ({
-        id: item.id,
-        nome: item.nome,
-        email: item.email,
-        telefone: item.telefone,
-        data_nascimento: item.data_nascimento,
-        foto: item.foto,
-        ocorrencias: item.ocorrencias
-    }));
-
-    return listaFormatada;
-};
+const { filtrarAlunos } = require('../../util/filtros.js');
 
 module.exports = async (req, res) => {
     try {

@@ -1,5 +1,6 @@
 const conexaoDB = require('./conexao.js');
 const { unlink } = require('fs');
+const { filtrarOcorrencias } = require('../util/filtros.js');
 
 const select = (consulta, tabela) => {
     return new Promise((resolve) => {
@@ -18,18 +19,6 @@ const select = (consulta, tabela) => {
 };
 
 const selectAlunos = (consulta, id) => {
-    const filtrarOcorrencias = (lista, id) => {
-        const listaFiltrada = lista.filter(({ id_aluno }) => id_aluno === id);
-        const listaFormatada = listaFiltrada.map(({ data_criacao, titulo, conteudo, criado_por }) => ({
-            data_criacao,
-            titulo,
-            conteudo,
-            criado_por
-        }));
-    
-        return listaFormatada;
-    };
-
     return new Promise((resolve) => {
         const funcaoAsync = async () => {
             const consultaOcorrencias = (
