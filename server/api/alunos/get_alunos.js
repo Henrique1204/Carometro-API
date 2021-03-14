@@ -1,17 +1,5 @@
 const { selectAlunos } = require('../../db.js');
 
-const filtrarOcorrencias = (lista, id) => {
-    const listaFiltrada = lista.filter(({ id_aluno }) => id_aluno === id);
-    const listaFormatada = listaFiltrada.map(({ data_criacao, titulo, conteudo, criado_por }) => ({
-        data_criacao,
-        titulo,
-        conteudo,
-        criado_por
-    }));
-
-    return listaFormatada;
-};
-
 module.exports = async (req, res) => {
     try {
         const { id } = req.params;

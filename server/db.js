@@ -2,6 +2,7 @@
 const mysql = require('mysql8');
 // Adicionar o pacote que permite o usa das vairáveis de ambiente.
 require('dotenv/config');
+const { unlink } = require('fs');
 
 // Configurando a conexão com o banco MySQL.
 const dbCon = mysql.createConnection({
@@ -44,6 +45,7 @@ const selectAlunos = (consulta) => {
 
                 const dados = alunos.map((aluno) => ({
                     ...aluno,
+                    formado: aluno.formado === 1,
                     data_nascimento: aluno.data_nascimento.toISOString().split('T')[0],
                     ocorrencias: filtrarOcorrencias(ocorrencias, aluno.id)
                 }));
@@ -55,8 +57,43 @@ const selectAlunos = (consulta) => {
     });
 };
 
+const deleteAlunos = (consulta, foto_antiga) => {
+    return new Promise((resolve) => {
+        dbCon.query(consulta, (erroAlunos, resAlunos) => {
+            if (erroAlunos) {
+                console.log(`ERRO: ${erroAlunos.sqlMessage}`);
+                const erro = { cod: 502, mensagem: 'Erro ao remover dados na tabela alunos!' };
+                resolve({ ok: false, resposta: erro });
+                return;
+            }
+
+            if (resAlunos.affectedRows === 0) {
+                const erro = { cod: 406, mensagem: 'Dado informado não pode ser removido.' };
+                resolve({ ok: false, resposta: erro });
+                return;
+            }
+
+            unlink(foto_antiga, () => {});
+
+            dbCon.query(`DELETE FROM ocorrencias WHERE id_aluno = ${id}`, (erroOcorrencias) => {
+                if (erroOcorrencias) {
+                    console.log(`ERRO: ${erroOcorrencias.sqlMessage}`);
+                    const erro = { cod: 502, mensagem: 'Erro ao remover dados na tabela ocorrencias!' };
+                    resolve({ ok: false, resposta: erro });
+                    return;
+                }
+
+                console.log(`DELETE: Itens removidos 1\nID: ${id}`);
+                const resposta = { status: 'Sucesso', mensagem: 'Dados removidos com sucesso!' };
+                resolve({ ok: true, resposta });
+            });
+        });
+    });
+}
+
 // Exportando a conexão do banco de dados.
 module.exports = {
     conexao: dbCon,
-    selectAlunos
+    selectAlunos,
+    deleteAlunos
 };
