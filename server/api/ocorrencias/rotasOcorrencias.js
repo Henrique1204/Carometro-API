@@ -3,17 +3,15 @@ const getOcorrencias = require('./get_ocorrencias.js');
 const postOcorrencias = require('./post_ocorrencias.js');
 const putOcorrencias = require('./put_ocorrencias.js');
 const deleteOcorrencias = require('./delete_ocorrencias.js');
-// Método para validar acesso das rotas.
-const validarRotas = require('../../util/validarRotas.js');
 
-module.exports = (app) => {
+module.exports = (router) => {
     // GET
-    app.get('/ocorrencias', validarRotas,  getOcorrencias);
-    app.get('/ocorrencias/:id', validarRotas,  getOcorrencias);
+    router.get('/ocorrencias',  getOcorrencias);
+    router.get('/ocorrencias/:id',  getOcorrencias);
     // POST
-    app.post('/ocorrencias', validarRotas,  postOcorrencias);
+    router.post('/ocorrencias',  postOcorrencias);
     // PUT
-    app.put('/ocorrencias/:id', validarRotas,  putOcorrencias);
+    router.put('/ocorrencias/:id',  putOcorrencias);
     // PUT
-    app.delete('/ocorrencias/:id', validarRotas,  deleteOcorrencias);
+    router.delete('/ocorrencias/:id',  deleteOcorrencias);
 };

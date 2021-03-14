@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
             throw new Error(erro);
         }
 
-        const consultaSelect = `SELECT * FROM alunos WHERE email = ${email}`;
+        const consultaSelect = `SELECT * FROM alunos WHERE email = '${email}'`;
 
         const consultaInsert = (
             `INSERT INTO alunos (id, nome, email, telefone, data_nascimento, foto, id_turma) VALUES

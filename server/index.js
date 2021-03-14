@@ -29,17 +29,8 @@ const rotaCadastro = require('./api/cadastro.js');
 app.post('/cadastro', validarRotas, rotaCadastro);
 
 // Rotas da API.
-const rotasAlunos = require('./api/alunos/rotasAlunos.js');
-rotasAlunos(app);
-
-const rotasOcorrencias = require('./api/ocorrencias/rotasOcorrencias.js');
-rotasOcorrencias(app);
-
-const rotasCursos = require('./api/cursos/rotasCursos.js');
-rotasCursos(app);
-
-const rotasTurmas = require('./api/turmas/rotasTurmas.js');
-rotasTurmas(app);
+const rotasAPI = require('./rotas');
+rotasAPI(app);
 
 // Rota para arquivos estáticos.
 app.use('/uploads', express.static('uploads'));

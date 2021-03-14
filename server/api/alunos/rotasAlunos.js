@@ -5,17 +5,15 @@ const putAluno = require('./put_aluno.js');
 const deleteAluno = require('./delete_aluno.js');
 // Multer.
 const upload = require('../../multer.js');
-// Método para validar acesso das rotas.
-const validarRotas = require('../../util/validarRotas.js');
 
-module.exports = (app) => {
+module.exports = (router) => {
     // GET
-    app.get('/alunos', validarRotas, getAlunos);
-    app.get('/alunos/:id', validarRotas, getAlunos);
+    router.get('/alunos', getAlunos);
+    router.get('/alunos/:id', getAlunos);
     // POST 
-    app.post('/alunos', validarRotas, upload.single('foto'), postAluno);
+    router.post('/alunos', upload.single('foto'), postAluno);
     // PUT
-    app.put('/alunos/:id', validarRotas, upload.single('foto'), putAluno);
+    router.put('/alunos/:id', upload.single('foto'), putAluno);
     // DELETE
-    app.delete('/alunos/:id', validarRotas, upload.single('foto'), deleteAluno);
+    router.delete('/alunos/:id', upload.single('foto'), deleteAluno);
 };
