@@ -6,6 +6,12 @@ const { SHA224 } = require("sha2");
 module.exports = async (req, res) => {
     try {
         const { usuario, senha } = req.body;
+
+        if (!usuario || !senha) {
+            const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
+            throw new Error(erro);
+        }
+
         // criptografada.
         const senhaCri = SHA224(senha.toString()).toString("hex");
         
