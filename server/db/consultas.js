@@ -1,7 +1,23 @@
 const conexaoDB = require('./conexao.js');
 const { unlink } = require('fs');
 
-const selectAlunos = (consulta) => {
+const select = (consulta, tabela) => {
+    return new Promise((resolve) => {
+        conexaoDB.query(consulta, (erroAlunos, resposta) => {
+            if (erroAlunos) {
+                console.log(erroAlunos.sqlMessage);
+                const erro = { cod: 502, mensagem: `Erro ao buscar por dados na tabela ${tabela}.` };
+                resolve({ ok: false, resposta: erro });
+                return;
+            }
+
+            console.log(`GET na tabela ${tabela} | Resultados ${resposta.length}`);
+            resolve({ ok: true, resposta });
+        });
+    });
+};
+
+const selectAlunos = (consulta, id) => {
     const filtrarOcorrencias = (lista, id) => {
         const listaFiltrada = lista.filter(({ id_aluno }) => id_aluno === id);
         const listaFormatada = listaFiltrada.map(({ data_criacao, titulo, conteudo, criado_por }) => ({
@@ -15,33 +31,28 @@ const selectAlunos = (consulta) => {
     };
 
     return new Promise((resolve) => {
-        conexaoDB.query(consulta, (erroAlunos, alunos) => {
-            if (erroAlunos) {
-                console.log(erroAlunos.sqlMessage);
-                const erro = { cod: 502, mensagem: 'Erro ao buscar por dados na tabela alunos.' };
-                resolve({ ok: false, resposta: erro });
-                return;
-            }
+        const funcaoAsync = async () => {
+            const consultaOcorrencias = (
+                `SELECT * FROM ocorrencias ${(id) ? `WHERE id_aluno = ${id}` : ''}`
+            );
     
-            conexaoDB.query('SELECT * FROM ocorrencias', (erroOcorrencias, ocorrencias) => {
-                if (erroOcorrencias) {
-                    console.log(erroOcorrencias.sqlMessage);
-                    const erro = { cod: 502, mensagem: 'Erro ao buscar por dados na tabela ocorrencias.' };
-                    resolve({ ok: false, resposta: erro });
-                    return;
-                }
+            const resAlunos = await select(consulta, 'alunos');
+            if (!resAlunos.ok) resolve(resAlunos);
+    
+            const resOco = await select(consultaOcorrencias, 'ocorrencias');
+            if (!resOco.ok) resolve(resOco);
+    
+            const resposta = resAlunos.resposta.map((aluno) => ({
+                ...aluno,
+                formado: aluno.formado === 1,
+                data_nascimento: aluno.data_nascimento.toISOString().split('T')[0],
+                ocorrencias: filtrarOcorrencias(resOco.resposta, aluno.id)
+            }));
+    
+            resolve({ ok: true, resposta });
+        };
 
-                const dados = alunos.map((aluno) => ({
-                    ...aluno,
-                    formado: aluno.formado === 1,
-                    data_nascimento: aluno.data_nascimento.toISOString().split('T')[0],
-                    ocorrencias: filtrarOcorrencias(ocorrencias, aluno.id)
-                }));
-    
-                console.log(`GET: Itens buscados ${dados.length}`);
-                resolve({ ok: true, resposta: dados });
-            });
-        });
+        funcaoAsync();
     });
 };
 
@@ -116,6 +127,7 @@ const putAlunos = (consulta, foto_antiga) => {
 
 // Exportando a conexão do banco de dados.
 module.exports = {
+    select,
     selectAlunos,
     deleteAlunos,
     postAlunos,

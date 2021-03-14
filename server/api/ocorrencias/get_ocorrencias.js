@@ -1,6 +1,6 @@
-const conexaoDB = require('../../db/conexao.js');
+const { select } = require('../../db/consultas.js');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     try {
         const { id } = req.params;
         const where = (id) ? `WHERE o.id = ${id}` : '';
@@ -10,25 +10,16 @@ module.exports = (req, res) => {
             FROM ocorrencias as o INNER JOIN alunos ON alunos.id = o.id_aluno ${where} ORDER by o.id`
         );
 
-        conexaoDB.query(consulta, (erroDB, ocorrencias) => {
-            if (erroDB) {
-                console.log(erroDB.sqlMessage);
-                res.status(502).send({
-                    status: 'Falha',
-                    messagem: 'Erro ao buscar por dados na tabela ocorrencias.'
-                });
+        const { ok, resposta } = await select(consulta, 'ocorrencias');
 
-                return;
-            }
+        if (!ok) throw new Error(JSON.stringify(resposta));
 
-            const dados = ocorrencias.map((ocorrencia) => ({
-                ...ocorrencia,
-                data_criacao: ocorrencia.data_criacao.toISOString().split('T')[0]
-            }));
+        const dados = resposta.map((ocorrencia) => ({
+            ...ocorrencia,
+            data_criacao: ocorrencia.data_criacao.toISOString().split('T')[0]
+        }));
 
-            console.log(`GET: Itens buscados ${dados.length}`);
-            res.status(200).send(dados);
-        });
+        res.status(200).send(dados);
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);
         res.status(cod).send({ status: "Falha", mensagem });

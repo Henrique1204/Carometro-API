@@ -3,14 +3,14 @@ const { selectAlunos } = require('../../db/consultas.js');
 module.exports = async (req, res) => {
     try {
         const { id } = req.params;
-        const where = (id) ? `WHERE a.id = ${id}` : '';
 
         const consulta = (
-            `SELECT a.id, a.nome, a.email, a.telefone, a.data_nascimento, a.foto, t.nome AS turma, t.formado  
-            FROM alunos AS a INNER JOIN turmas AS t ON a.id_turma = t.id ${where} ORDER by a.id`
+            `SELECT a.id, a.nome, a.email, a.telefone, a.data_nascimento, a.foto, t.nome AS turma, 
+            t.formado FROM alunos AS a INNER JOIN turmas AS t ON a.id_turma = t.id 
+            ${(id) ? `WHERE a.id = ${id}` : ''} ORDER by a.id`
         );
 
-        const { ok, resposta } = await selectAlunos(consulta);
+        const { ok, resposta } = await selectAlunos(consulta, id);
 
         if (!ok) throw new Error(JSON.stringify(resposta));
 
