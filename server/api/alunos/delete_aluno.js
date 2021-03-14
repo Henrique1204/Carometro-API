@@ -1,4 +1,6 @@
-const { deleteAlunos } = require('../../db/consultas.js');
+const { deleteSQL } = require('../../db/consultas.js');
+const { unlink } = require('fs');
+
 
 module.exports = async (req, res) => {
     try {
@@ -10,15 +12,16 @@ module.exports = async (req, res) => {
             throw new Error(erro);
         }
 
-        const { ok, resposta } = await deleteAlunos(
-            `DELETE FROM alunos WHERE id = ${id}`,
-            foto_antiga,
-            id
-        );
+        const consultaAlunos = `DELETE FROM alunos WHERE id = ${id}`;
+        const consultaOcorrencias = `DELETE FROM ocorrencias WHERE id_aluno = ${id}`;
 
-        if (!ok) throw new Error(JSON.stringify(resposta));
+        const resAlunos = await deleteSQL(consultaAlunos, 'alunos', id);
+        if (!resAlunos.ok) throw new Error(JSON.stringify(resAlunos.resposta));
+        unlink(foto_antiga, () => {});
 
-        res.status(201).send(resposta);
+        await deleteSQL(consultaOcorrencias, 'ocorrencias', id);
+
+        res.status(201).send(resAlunos.resposta);
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);
         res.status(cod).send({ status: 'Falha', mensagem });

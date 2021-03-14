@@ -1,6 +1,6 @@
-const conexaoDB = require('../../db/conexao.js');
+const { deleteSQL } = require('../../db/consultas.js');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -9,29 +9,12 @@ module.exports = (req, res) => {
             throw new Error(erro);
         }
     
-        conexaoDB.query(`DELETE FROM ocorrencias WHERE id = ${id}`, (erroDB, resDB) => {
-            if (erroDB) {
-                console.log(erroDB.sqlMessage);
-                res.status(502).send({
-                    status: 'Falha',
-                    mensagem: 'Erro ao remover dados na tabela ocorrencias!'
-                });
+        const consulta = `DELETE FROM ocorrencias WHERE id = ${id}`;
 
-                return;
-            }
+        const { ok, resposta } = await deleteSQL(consulta, 'ocorrencias', id);
+        if (!ok) throw new Error(JSON.stringify(resposta));
 
-            if (resDB.affectedRows === 0) {
-                res.status(406).send({
-                    status: 'Falha',
-                    mensagem: 'Dado informado já foi removido.'
-                });
-    
-                return;
-            }
-
-            console.log(`DELETE: Itens removidos 1\nID: ${id}`);
-            res.status(201).send({ status: 'Sucesso', mensagem: 'Dados removidos com sucesso!' });
-        });
+        res.status(201).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);
         res.status(cod).send({ status: 'Falha', mensagem });

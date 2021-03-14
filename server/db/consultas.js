@@ -51,6 +51,29 @@ const update = (consulta, tabela, id) => {
     })
 };
 
+const deleteSQL = (consulta, tabela, id) => {
+    return new Promise((resolve) => {
+        conexaoDB.query(consulta, (erroDB, resDB) => {
+            if (erroDB) {
+                console.log(`ERRO: ${erroDB.sqlMessage}`);
+                const erro = { cod: 502, mensagem: `Erro ao remover dados na tabela ${tabela}!` };
+                resolve({ ok: false, resposta: erro });
+                return;
+            }
+
+            if (resDB.affectedRows === 0) {
+                const erro = { cod: 406, mensagem: 'Dado informado não pode ser removido.' };
+                resolve({ ok: false, resposta: erro });
+                return;
+            }
+
+            console.log(`DELETE na tabela ${tabela} | ID do item removido: ${id}`);
+            const resposta = { status: 'Sucesso', mensagem: 'Dados removidos com sucesso!' };
+            resolve({ ok: true, resposta });
+        });
+    });
+};
+
 const selectAlunos = (consulta, id) => {
     return new Promise((resolve) => {
         const funcaoAsync = async () => {
@@ -78,45 +101,11 @@ const selectAlunos = (consulta, id) => {
     });
 };
 
-const deleteAlunos = (consulta, foto_antiga, id) => {
-    return new Promise((resolve) => {
-        conexaoDB.query(consulta, (erroAlunos, resAlunos) => {
-            if (erroAlunos) {
-                console.log(`ERRO: ${erroAlunos.sqlMessage}`);
-                const erro = { cod: 502, mensagem: 'Erro ao remover dados na tabela alunos!' };
-                resolve({ ok: false, resposta: erro });
-                return;
-            }
-
-            if (resAlunos.affectedRows === 0) {
-                const erro = { cod: 406, mensagem: 'Dado informado não pode ser removido.' };
-                resolve({ ok: false, resposta: erro });
-                return;
-            }
-
-            unlink(foto_antiga, () => {});
-
-            conexaoDB.query(`DELETE FROM ocorrencias WHERE id_aluno = ${id}`, (erroOcorrencias) => {
-                if (erroOcorrencias) {
-                    console.log(`ERRO: ${erroOcorrencias.sqlMessage}`);
-                    const erro = { cod: 502, mensagem: 'Erro ao remover dados na tabela ocorrencias!' };
-                    resolve({ ok: false, resposta: erro });
-                    return;
-                }
-
-                console.log(`DELETE: Itens removidos 1`);
-                const resposta = { status: 'Sucesso', mensagem: 'Dados removidos com sucesso!' };
-                resolve({ ok: true, resposta });
-            });
-        });
-    });
-};
-
-// Exportando a conexão do banco de dados.
+// Exportando as funções de consultas.
 module.exports = {
     select,
     insert,
     update,
-    selectAlunos,
-    deleteAlunos
+    deleteSQL,
+    selectAlunos
 };
