@@ -1,4 +1,4 @@
-const { insert } = require('../../db/consultas.js');
+const { select, insert } = require('../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {
@@ -15,16 +15,25 @@ module.exports = async (req, res) => {
             throw new Error(erro);
         }
 
-        const consulta = (
+        const consultaSelect = `SELECT * FROM alunos WHERE email = ${email}`;
+
+        const consultaInsert = (
             `INSERT INTO alunos (id, nome, email, telefone, data_nascimento, foto, id_turma) VALUES
             (null, '${nome}', '${email}', '${telefone}', '${data_nascimento}', '${foto}', '${id_turma}')`
         );
 
-        const { ok, resposta } = await insert(consulta, 'alunos');
+        const resSelect = await select(consultaSelect, 'alunos');
+        if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
 
-        if (!ok) throw new Error(JSON.stringify(resposta));
+        if (resSelect.resposta.length !== 0) {
+            const erro = { cod: 422, mensagem: 'Aluno já existe!' };
+            throw new Error(JSON.stringify(erro));
+        }
 
-        res.status(201).send(resposta);
+        const resInsert = await insert(consultaInsert, 'alunos');
+        if (!resInsert.ok) throw new Error(JSON.stringify(resInsert.resposta));
+
+        res.status(201).send(resInsert.resposta);
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 
