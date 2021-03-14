@@ -1,4 +1,5 @@
-const { putAlunos } = require('../../db/consultas.js');
+const { update } = require('../../db/consultas.js');
+const { unlink } = require('fs');
 
 module.exports = async (req, res) => {
     try {
@@ -16,10 +17,11 @@ module.exports = async (req, res) => {
             foto = '${foto}', id_turma = '${id_turma}' WHERE id = ${id}`
         );
     
-        const { ok, resposta } = await putAlunos(consulta, foto_antiga);
+        const { ok, resposta } = await update(consulta, 'alunos', id);
 
         if (!ok) throw new Error(JSON.stringify(resposta));
 
+        unlink(foto_antiga, () => {});
         res.status(201).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);

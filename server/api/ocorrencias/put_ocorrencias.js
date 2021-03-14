@@ -1,6 +1,6 @@
-const conexaoDB = require('../../db/conexao.js');
+const { update } = require('../../db/consultas.js');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     try {
         const { titulo, conteudo, criado_por, id_aluno } = req.body;
         const { id } = req.params;
@@ -15,20 +15,11 @@ module.exports = (req, res) => {
             id_aluno = '${id_aluno}' WHERE id = ${id}`
         );
     
-        conexaoDB.query(consulta, (erroDB) => {
-            if (erroDB) {
-                console.log(erroDB.sqlMessage);
-                res.status(502).send({
-                    status: 'Falha',
-                    messagem: 'Erro ao atualizar dados na tabela ocorrencias.'
-                });
+        const { ok, resposta } = await update(consulta, 'ocorrencias', id);
 
-                return;
-            }
-    
-            console.log(`PUT: Itens atualizados 1\nID: ${id}`);
-            res.status(201).send({ status: 'Sucesso', mensagem: 'Dados atualizados com sucesso!' });
-        });
+        if (!ok) throw new Error(JSON.stringify(resposta));
+
+        res.status(201).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem } = JSON.parse(message);
         res.status(cod).send({ status: 'Falha', mensagem });

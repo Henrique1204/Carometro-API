@@ -1,12 +1,11 @@
 const conexaoDB = require('./conexao.js');
-const { unlink } = require('fs');
 const { filtrarOcorrencias } = require('../util/filtros.js');
 
 const select = (consulta, tabela) => {
     return new Promise((resolve) => {
-        conexaoDB.query(consulta, (erroAlunos, resposta) => {
-            if (erroAlunos) {
-                console.log(erroAlunos.sqlMessage);
+        conexaoDB.query(consulta, (erroDB, resposta) => {
+            if (erroDB) {
+                console.log(erroDB.sqlMessage);
                 const erro = { cod: 502, mensagem: `Erro ao buscar por dados na tabela ${tabela}.` };
                 resolve({ ok: false, resposta: erro });
                 return;
@@ -16,6 +15,40 @@ const select = (consulta, tabela) => {
             resolve({ ok: true, resposta });
         });
     });
+};
+
+const insert = (consulta, tabela) => {
+    return new Promise((resolve) => {
+        conexaoDB.query(consulta, (erroDB, resDB) => {
+            if (erroDB) {
+                console.log(`ERRO: ${erroDB.sqlMessage}`);
+                const erro = { cod: 502, mensagem: `Erro ao adicionar dados na tabela ${tabela}.` };
+                resolve({ ok: false, resposta: erro });
+                return;
+            }
+
+            console.log(`POST na tabela ${tabela} | ID criado: ${resDB.insertId}`);
+            const resposta = { status: 'Sucesso', mensagem: 'Dados adicionados com sucesso!' };
+            resolve({ ok: true, resposta });
+        });
+    });
+};
+
+const update = (consulta, tabela, id) => {
+    return new Promise((resolve) => {
+        conexaoDB.query(consulta, (erroDB) => {
+            if (erroDB) {
+                console.log(`ERRO: ${erroDB.sqlMessage}`);
+                const erro = { cod: 502, mensagem: `Erro ao atualizar dados na tabela ${tabela}.` };
+                resolve({ ok: false, resposta: erro });
+                return;
+            }
+
+            console.log(`PUT na tabela ${tabela} | ID do item alterado: ${id}`);
+            const resposta = { status: 'Sucesso', mensagem: 'Dados atualizados com sucesso!' };
+            resolve({ ok: true, resposta });
+        });
+    })
 };
 
 const selectAlunos = (consulta, id) => {
@@ -79,47 +112,11 @@ const deleteAlunos = (consulta, foto_antiga, id) => {
     });
 };
 
-const insert = (consulta, tabela) => {
-    return new Promise((resolve) => {
-        conexaoDB.query(consulta, (erroDB, resDB) => {
-            if (erroDB) {
-                console.log(`ERRO: ${erroAlunos.sqlMessage}`);
-                const erro = { cod: 502, mensagem: `Erro ao adicionar dados na tabela ${tabela}.` };
-                resolve({ ok: false, resposta: erro });
-                return;
-            }
-
-            console.log(`POST na tabela ${tabela} | ID criado: ${resDB.insertId}`)
-            const resposta = { status: 'Sucesso', mensagem: 'Dados adicionados com sucesso!' };
-            resolve({ ok: true, resposta });
-        });
-    });
-}
-
-const putAlunos = (consulta, foto_antiga) => {
-    return new Promise((resolve) => {
-        conexaoDB.query(consulta, (erroDB) => {
-            if (erroDB) {
-                console.log(`ERRO: ${erroAlunos.sqlMessage}`);
-                const erro = { cod: 502, mensagem: 'Erro ao atualizar dados na tabela alunos.' };
-                resolve({ ok: false, resposta: erro });
-                return;
-            }
-
-            unlink(foto_antiga, () => {});
-    
-            console.log(`PUT: Itens atualizados 1`);
-            const resposta = { status: 'Sucesso', mensagem: 'Dados adicionados com sucesso!' };
-            resolve({ ok: true, resposta });
-        });
-    })
-}
-
 // Exportando a conexão do banco de dados.
 module.exports = {
     select,
     insert,
+    update,
     selectAlunos,
-    deleteAlunos,
-    putAlunos
+    deleteAlunos
 };
