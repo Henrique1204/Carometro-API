@@ -12,5 +12,4 @@ nome - Paulo - text
 email - paulo@gmail.com - text
 telefone - 11 987654321 - text
 id_turma - 1 - text
-foto_antiga - caminho/foto.png - text
 foto - arquivo - file

@@ -1,23 +1,25 @@
-const { deleteSQL } = require('../../../db/consultas.js');
+const { select, deleteSQL } = require('../../../db/consultas.js');
 const { unlink } = require('fs');
-
 
 module.exports = async (req, res) => {
     try {
-        const { foto_antiga } = req.body;
         const { id } = req.params;
 
-        if (!id || !foto_antiga) {
+        if (!id) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
             throw new Error(erro);
         }
 
+        const consultaSelect = `SELECT foto FROM alunos WHERE id = ${id}`;
         const consultaAlunos = `DELETE FROM alunos WHERE id = ${id}`;
         const consultaOcorrencias = `DELETE FROM ocorrencias WHERE id_aluno = ${id}`;
 
+        const resSelect = await select(consultaSelect, 'alunos');
+        if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
+
         const resAlunos = await deleteSQL(consultaAlunos, 'alunos', id);
         if (!resAlunos.ok) throw new Error(JSON.stringify(resAlunos.resposta));
-        unlink(foto_antiga, () => {});
+        unlink(resSelect.resposta[0].foto, () => {});
 
         await deleteSQL(consultaOcorrencias, 'ocorrencias', id);
 

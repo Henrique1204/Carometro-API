@@ -15,5 +15,5 @@ module.exports = (router) => {
     // PUT
     router.put('/alunos/:id', upload.single('foto'), putAluno);
     // DELETE
-    router.delete('/alunos/:id', upload.single('foto'), deleteAluno);
+    router.delete('/alunos/:id', deleteAluno);
 };

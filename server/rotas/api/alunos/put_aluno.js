@@ -1,13 +1,13 @@
-const { update } = require('../../../db/consultas.js');
+const { select, update } = require('../../../db/consultas.js');
 const { unlink } = require('fs');
 
 module.exports = async (req, res) => {
     try {
-        const { nome, email, telefone, id_turma, foto_antiga } = req.body;
+        const { nome, email, telefone, id_turma } = req.body;
         const foto = req.file?.path.replace('\\', '/');
         const { id } = req.params;
 
-        if (!nome || !email || !telefone || !foto || !id_turma || !id || !foto_antiga) {
+        if (!nome || !email || !telefone || !foto || !id_turma || !id) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
             throw new Error(erro);
         }
@@ -17,17 +17,21 @@ module.exports = async (req, res) => {
             throw new Error(erro);
         }
 
-        const consulta = (
+        const consultaSelect = `SELECT foto FROM alunos WHERE id = ${id}`;
+
+        const consultaUpdate = (
             `UPDATE alunos SET nome = '${nome}', email = '${email}', telefone = '${telefone}', 
             foto = '${foto}', id_turma = '${id_turma}' WHERE id = ${id}`
         );
     
-        const { ok, resposta } = await update(consulta, 'alunos', id);
+        const resSelect = await select(consultaSelect, 'alunos');
+        if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
 
-        if (!ok) throw new Error(JSON.stringify(resposta));
+        const resUpdate = await update(consultaUpdate, 'alunos', id);
+        if (!resUpdate.ok) throw new Error(JSON.stringify(resUpdate.resposta));
 
-        unlink(foto_antiga, () => {});
-        res.status(201).send(resposta);
+        unlink(resSelect.resposta[0].foto, () => {});
+        res.status(201).send(resUpdate.resposta);
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 

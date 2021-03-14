@@ -29,8 +29,5 @@
     },
     "put/turmas": {
         "nome": "1QM"
-    },
-    "delete/alunos": {
-        "foto_antiga": "caminho/foto.png"
     }
 }
