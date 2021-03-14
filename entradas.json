@@ -1,0 +1,34 @@
+{
+    "post/cursos": {
+        "nome": "Mecânica",
+        "periodo": "noite"
+    },
+    "post/ocorrencias": {
+        "titulo": "Briga com aluno.",
+        "conteudo": "O aluno brigou com outro aluno.",
+        "criado_por": "Átila",
+        "id_aluno": 1
+    },
+    "post/turmas": {
+        "nome": "1MN",
+        "id_curso": 3,
+        "formado": 0
+    },
+    "put/cursos": {
+        "nome": "Qualidade",
+        "periodo": "manhã"
+    },
+    "put/ocorrencias": {
+        "titulo": "Briga com professor.",
+        "conteudo": "O aluno brigou com um professor.",
+        "criado_por": "Átila",
+        "id_aluno": 1
+    },
+    "put/turmas": {
+        "nome": "1QM",
+        "formado": 0
+    },
+    "delete/alunos": {
+        "foto_antiga": "caminho/foto.png"
+    }
+}
