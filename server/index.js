@@ -31,6 +31,10 @@ rotasTurmas(app);
 const rotaLogin = require('./api/login.js');
 app.post('/login', rotaLogin);
 
+const validarRotas = require('./util/validarRotas.js');
+const rotaValidarToken = require('./api/validarToken.js');
+app.post('/validarToken', validarRotas, rotaValidarToken);
+
 // Rota para arquivos estáticos.
 app.use('/uploads', express.static('uploads'));
 

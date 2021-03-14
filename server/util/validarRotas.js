@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
             throw new Error(JSON.stringify(erro));
         }
 
-        if (req.route.methods.get) {
+        if (req.route.methods.get || req.route.path === '/validarToken') {
             jwt.verify(token, process.env.SEGREDO_USER, function(erro, decoded) {
                 if (!erro) {
                     isValido = true;
