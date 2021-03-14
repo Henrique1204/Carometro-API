@@ -9,6 +9,11 @@ module.exports = async (req, res) => {
             throw new Error(erro);
         }
 
+        if (isNaN(id_aluno)) {
+            const erro = JSON.stringify({ cod: 406, mensagem: "Dados inválidos!" });
+            throw new Error(erro);
+        }
+
         const data = new Date().toISOString().split('T')[0];
 
         const consulta = (

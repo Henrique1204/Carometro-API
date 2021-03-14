@@ -12,6 +12,11 @@ module.exports = async (req, res) => {
             throw new Error(erro);
         }
 
+        if (isNaN(id_turma)) {
+            const erro = JSON.stringify({ cod: 406, mensagem: "Dados inválidos!" });
+            throw new Error(erro);
+        }
+
         const consulta = (
             `UPDATE alunos SET nome = '${nome}', email = '${email}', telefone = '${telefone}', 
             foto = '${foto}', id_turma = '${id_turma}' WHERE id = ${id}`

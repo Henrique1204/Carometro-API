@@ -10,6 +10,11 @@ module.exports = async (req, res) => {
             throw new Error(erro);
         }
 
+        if (isNaN(id_turma)) {
+            const erro = JSON.stringify({ cod: 406, mensagem: "Dados inválidos!" });
+            throw new Error(erro);
+        }
+
         const consulta = (
             `INSERT INTO alunos (id, nome, email, telefone, data_nascimento, foto, id_turma) VALUES
             (null, '${nome}', '${email}', '${telefone}', '${data_nascimento}', '${foto}', '${id_turma}')`
