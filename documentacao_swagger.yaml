@@ -1,0 +1,1289 @@
+openapi: 3.0.0
+
+info:
+  title: 'Carometro API'
+  description: 'Sistema para controle de dados de alunos do SENAI Suiço-Brasileira.'
+  version: '1.0.0'
+
+servers:
+  - url: 'http://localhost:8000'
+    description: 'Servidor local para desenvolvimento e testes.'
+
+components:
+  schemas:
+    alunos:
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        nome:
+          type: string
+          example: 'Paulo'
+        email:
+          type: string
+          example: 'paulo@gmail.com'
+        telefone:
+          type: string
+          example: '11 9876-6543'
+        data_nascimento:
+          type: string
+          example: '2001-09-20'
+        foto:
+          type: string
+          example: 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg'
+        turma:
+          type: string
+          example: '1DT'
+        formado:
+          type: boolean
+          example: false
+        ocorrencias:
+          type: array
+          items:
+            type: object
+            properties:
+              data_criacao:
+                type: string
+                example: '2021-03-12'
+              titulo:
+                type: string
+                example: 'Briga com aluno.'
+              conteudo:
+                type: string
+                example: 'Brigou com um aluno em sala de aula.'
+              criado_por:
+                type: string
+                example: 'Cláudia'
+
+    ocorrencias:
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        data_criacao:
+          type: string
+          example: '2021-03-12'
+        titulo:
+          type: string
+          example: 'Briga com aluno'
+        conteudo:
+          type: string
+          example: 'Brigou com um aluno em sala de aula'
+        criado_por:
+          type: string
+          example: 'Cláudia'
+        aluno:
+          type: string
+          example: 'Paulo'
+
+    turmas:
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        nome:
+          type: string
+          example: '1DT'
+        formado:
+          type: boolean
+          example: false
+        curso:
+          type: string
+          example: 'Desenvolvimento'
+        periodo:
+          type: string
+          example: 'Tarde'
+        alunos:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+                example: 1
+              nome:
+                type: string
+                example: 'Paulo'
+              telefone:
+                type: string
+                example: '11 9876-5432'
+              data_nascimento:
+                type: string
+                example: '2001-20-09'
+              foto:
+                type: string
+                example: 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg'
+              ocorrencias:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    data_criaco:
+                      type: string
+                      example: '2021-03-12'
+                    titulo:
+                      type: string
+                      example: 'Briga com aluno'
+                    conteudo:
+                      type: string
+                      example: 'Brigou com um aluno em sala de aula'
+                    criado_por:
+                      type: string
+                      example: 'Cláudia'
+
+    cursos:
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        nome:
+          type: string
+          example: 'Desenvolvimento'
+        periodo:
+          type: string
+          example: 'Tarde'
+
+    sucesso:
+      properties:
+        status:
+          type: string
+          example: 'Sucesso'
+        mensagem:
+          type: string
+          example: 'Operação realizada com sucesso.'
+
+    erro_dados:
+      properties:
+        status:
+          type: string
+          example: 'Falha'
+        mensagem:
+          type: string
+          example: 'Explicação do erro.'
+
+    erro_banco:
+      properties:
+        status:
+          type: string
+          example: 'Falha'
+        mensagem:
+          type: string
+          example: 'Falha ao buscar dados no banco de dados.'
+        erroSQL:
+          type: string
+          example: 'Erro do MySQL'
+
+    erro_auth:
+      properties:
+        auth:
+          type: boolean
+          example: false
+        mensagem:
+          type: string
+          example: 'Você não tem autorização.'
+
+paths:
+  /aut/login:
+    post:
+      summary: 'Retorna o token da autenticação'
+      tags:
+        - Autenticação
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                NI:
+                  type: string
+                  example: '333'
+                senha:
+                  type: string
+                  example: '1234'
+      responses:
+        '202':
+          description: 'JSON dados da autenticação.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth:
+                    type: boolean
+                    example: true
+                  token:
+                    type: string
+                    example: 'oekokdeokdoekdoekoekod'
+                  usuario:
+                    type: object
+                    properties:
+                      NI:
+                        type: string
+                        example: '333'
+                      nome:
+                        type: string
+                        example: 'Átila'
+                      isAdmin:
+                        type: boolean
+                        example: false
+        '404':
+          description: 'Dados inválidos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '502':
+            description: 'JSON com status de falha e mensagem de erro.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_banco'
+
+  /aut/cadastro:
+    post:
+      summary: 'Adiciona um novo usuario.'
+      tags:
+        - Autenticação
+      parameters:
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                NI:
+                  type: string
+                  example: '444'
+                senha:
+                  type: string
+                  example: '5678'
+                nome:
+                  type: string
+                  example: 'Paulo'
+                isAdmin:
+                  type: boolean
+                  example: false
+      responses:
+        '201':
+          description: 'JSON com a mensagem de sucesso.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '406':
+          description: 'Dados inválidos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '422':
+          description: 'Usuário já cadastrado.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '502':
+            description: 'JSON com status de falha e mensagem de erro.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_banco'
+
+  /aut/trocarSenha:
+    put:
+      summary: 'Troca a senha de um usuario.'
+      tags:
+        - Autenticação
+      parameters:
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                NI:
+                  type: string
+                  example: '444'
+                senha:
+                  type: string
+                  example: '5678'
+      responses:
+        '201':
+          description: 'JSON com informações de sucesso.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '404':
+          description: 'Dados inválidos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '502':
+            description: 'JSON com status de falha e mensagem de erro.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_banco'
+
+  /aut/validarToken:
+    put:
+      summary: 'Valida o token.'
+      tags:
+        - Autenticação
+      parameters:
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '202':
+          description: 'JSON com informações de sucesso.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth:
+                    type: boolean
+                    example: true
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+
+  /api/alunos:
+    get:
+      summary: 'Busca lista de alunos.'
+      tags:
+        - Alunos
+      parameters:
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '200':
+          description: 'JSON com array de dados.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/alunos'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '502':
+            description: 'JSON com status de falha e mensagem de erro.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_banco'
+
+    post:
+      summary: 'Adiciona aluno'
+      tags:
+        - Alunos
+      parameters:
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                  example: 'Vidal'
+                email:
+                  type: string
+                  example: 'vidal@gmail.com'
+                telefone:
+                  type: string
+                  example: '11 2345-6789'
+                data_nascimento:
+                  type: string
+                  example: '2003-01-01'
+                id_turma:
+                  type: integer
+                  format: int64
+                  example: 1
+                foto:
+                  type: string
+                  example: 'Upload da foto.'
+      responses:
+        '201':
+          description: 'Item adicionado'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '406':
+          description: 'Dados inválidos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '422':
+          description: 'Aluno já cadastrado.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '502':
+          description: 'JSON com status de falha e mensagem de erro.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_banco'
+
+  /api/alunos/{id}:
+    get:
+      summary: 'Busca aluno.'
+      tags:
+        - Alunos
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 'Id do aluno.'
+        schema:
+          type : integer
+          format: int64
+          minimum: 1
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '200':
+          description: 'Objeto com dados do aluno.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/alunos'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '502':
+            description: 'JSON com status de falha e mensagem de erro.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_banco'
+
+    put:
+      summary: 'Atualiza aluno'
+      tags:
+        - Alunos
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 'Id do aluno.'
+        schema:
+          type : integer
+          format: int64
+          minimum: 1
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                  example: 'Paulo Henrique'
+                email:
+                  type: string
+                  example: 'paulo@gmail.com'
+                telefone:
+                  type: string
+                  example: '11 2345-6789'
+                id_turma:
+                  type: integer
+                  format: int64
+                  example: 1
+                foto:
+                  type: string
+                  example: 'Upload da foto.'
+      responses:
+        '201':
+          description: 'Item atualizado'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '406':
+          description: 'Dados inválidos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '422':
+          description: 'E-mail pertence a outro aluno.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '502':
+          description: 'JSON com status de falha e mensagem de erro.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_banco'
+
+    delete:
+      summary: 'Remove aluno'
+      tags:
+        - Alunos
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 'Id do aluno.'
+        schema:
+          type : integer
+          format: int64
+          minimum: 1
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '201':
+          description: 'Item removido'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '406':
+          description: 'Dados inválidos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '502':
+          description: 'JSON com status de falha e mensagem de erro.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_banco'
+
+  /api/ocorrencias:
+    get:
+      summary: 'Busca lista de ocorrencias.'
+      tags:
+        - Ocorrencias
+      parameters:
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '200':
+          description: 'JSON com array de dados.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ocorrencias'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '502':
+            description: 'JSON com status de falha e mensagem de erro.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_banco'
+
+    post:
+      summary: 'Adiciona ocorrencia'
+      tags:
+        - Ocorrencias
+      parameters:
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                titulo:
+                  type: string
+                  example: 'Briga com aluno.'
+                conteudo:
+                  type: string
+                  example: 'O aluno brigou com outro aluno.'
+                criado_por:
+                  type: string
+                  example: 'Átila'
+                id_aluno:
+                  type: integer
+                  format: int64
+                  example: 1
+      responses:
+        '201':
+          description: 'Item adicionado'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '406':
+          description: 'Dados inválidos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '502':
+          description: 'JSON com status de falha e mensagem de erro.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_banco'
+
+  /api/ocorrencias/{id}:
+    get:
+      summary: 'Busca ocorrencia.'
+      tags:
+        - Ocorrencias
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 'Id da ocorrencia.'
+        schema:
+          type : integer
+          format: int64
+          minimum: 1
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '200':
+          description: 'Objeto com dados da ocorrencia.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ocorrencias'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '502':
+            description: 'JSON com status de falha e mensagem de erro.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_banco'
+
+    put:
+      summary: 'Atualiza ocorrencia'
+      tags:
+        - Ocorrencias
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 'Id da ocorrencia.'
+        schema:
+          type : integer
+          format: int64
+          minimum: 1
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                titulo:
+                  type: string
+                  example: 'Briga com professor.'
+                conteudo:
+                  type: string
+                  example: 'O aluno brigou com um professor.'
+      responses:
+        '201':
+          description: 'Item atualizado'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '502':
+          description: 'JSON com status de falha e mensagem de erro.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_banco'
+
+    delete:
+      summary: 'Remover ocorrencia'
+      tags:
+        - Ocorrencias
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 'Id da ocorrencia.'
+        schema:
+          type : integer
+          format: int64
+          minimum: 1
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '201':
+          description: 'Item removido'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '406':
+          description: 'Dados inválidos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '502':
+          description: 'JSON com status de falha e mensagem de erro.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_banco'
+
+  /api/turmas:
+    get:
+      summary: 'Busca lista de turmas'
+      tags:
+        - Turmas
+      parameters:
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '200':
+          description: 'JSON com array de dados.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/turmas'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '502':
+            description: 'JSON com status de falha e mensagem de erro.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_banco'
+
+    post:
+      summary: 'Adiciona turma'
+      tags:
+        - Turmas
+      parameters:
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                  example: '2DT'
+                id_curso:
+                  type: integer
+                  format: int64
+                  example: 1
+      responses:
+        '201':
+          description: 'Item adicionado'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '406':
+          description: 'Dados inválidos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '502':
+          description: 'JSON com status de falha e mensagem de erro.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_banco'
+
+  /api/turmas/{id}:
+    get:
+      summary: 'Busca turma.'
+      tags:
+        - Turmas
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 'Id da turma.'
+        schema:
+          type : integer
+          format: int64
+          minimum: 1
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '200':
+          description: 'Objeto com dados da turma.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/turmas'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '502':
+            description: 'JSON com status de falha e mensagem de erro.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_banco'
+
+    put:
+      summary: 'Atualiza turma'
+      tags:
+        - Turmas
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 'Id da turma.'
+        schema:
+          type : integer
+          format: int64
+          minimum: 1
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                  example: '2DT'
+      responses:
+        '201':
+          description: 'Item atualizado'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '502':
+          description: 'JSON com status de falha e mensagem de erro.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_banco'
+
+    delete:
+      summary: 'Remover turma'
+      tags:
+        - Turmas
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 'Id da turma.'
+        schema:
+          type : integer
+          format: int64
+          minimum: 1
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '201':
+          description: 'Item removido'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '406':
+          description: 'Dados inválidos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '502':
+          description: 'JSON com status de falha e mensagem de erro.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_banco'
+
+  /api/cursos:
+    get:
+      summary: 'Busca lista de cursos'
+      tags:
+        - Cursos
+      parameters:
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '200':
+          description: 'JSON com array de dados.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/cursos'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '502':
+            description: 'JSON com status de falha e mensagem de erro.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_banco'
+
+    post:
+      summary: 'Adiciona curso'
+      tags:
+        - Cursos
+      parameters:
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                  example: 'Mêcanica'
+                periodo:
+                  type: string
+                  example: 'noite'
+      responses:
+        '201':
+          description: 'Item adicionado'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sucesso'
+        '400':
+          description: 'Dados incompletos'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_dados'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '502':
+          description: 'JSON com status de falha e mensagem de erro.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erro_banco'
+
+  /api/cursos/{id}:
+    get:
+      summary: 'Busca curso.'
+      tags:
+        - Cursos
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 'Id do curso.'
+        schema:
+          type : integer
+          format: int64
+          minimum: 1
+      - name: x-access-token
+        in: header
+        schema:
+          type: string
+        required: true
+        description: 'Token para autenticação'
+      responses:
+        '200':
+          description: 'Objeto com dados da curso.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cursos'
+        '403':
+            description: 'Falha na autenticação.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_auth'
+        '502':
+            description: 'JSON com status de falha e mensagem de erro.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/erro_banco'

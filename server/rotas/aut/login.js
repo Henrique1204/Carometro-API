@@ -8,7 +8,6 @@ module.exports = async (req, res) => {
         const { NI: NI_body, senha } = req.body;
 
         if (!NI_body || !senha) {
-            console.log("Aqui.");
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
             throw new Error(erro);
         }
