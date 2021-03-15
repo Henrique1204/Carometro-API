@@ -21,10 +21,6 @@ module.exports = async (req, res) => {
 
         const consultaSelect = `SELECT * FROM alunos WHERE email = '${email}'`;
 
-        const consultaTurma = (
-            `SELECT t.nome FROM alunos INNER JOIN turmas as t ON alunos.id_turma = t.id`
-        );
-
         const resSelect = await select(consultaSelect, 'alunos');
         if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
 
@@ -32,6 +28,10 @@ module.exports = async (req, res) => {
             const erro = { cod: 422, mensagem: 'Aluno já existe!' };
             throw new Error(JSON.stringify(erro));
         }
+
+        const consultaTurma = (
+            `SELECT t.nome FROM alunos INNER JOIN turmas as t ON alunos.id_turma = t.id`
+        );
 
         const resTurma = await select(consultaTurma, 'turmas');
         if (!resTurma.ok) throw new Error(JSON.stringify(resTurma.resposta));

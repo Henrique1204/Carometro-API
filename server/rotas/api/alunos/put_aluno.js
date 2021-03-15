@@ -20,10 +20,20 @@ module.exports = async (req, res) => {
             throw new Error(erro);
         }
 
-        const consultaSelect = `SELECT foto FROM alunos WHERE id = ${id}`;
+        const consultaFoto = `SELECT foto FROM alunos WHERE id = ${id}`;
 
-        const resSelect = await select(consultaSelect, 'alunos');
-        if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
+        const consultaEmail = `SELECT * FROM alunos WHERE email = '${email}'`;
+
+        const resEmail = await select(consultaEmail, 'alunos');
+        if (!resEmail.ok) throw new Error(JSON.stringify(resEmail.resposta));
+
+        if (resEmail.resposta.length !== 0) {
+            const erro = { cod: 422, mensagem: 'E-mail pertence a outro aluno.' };
+            throw new Error(JSON.stringify(erro));
+        }
+
+        const resFoto = await select(consultaFoto, 'alunos');
+        if (!resFoto.ok) throw new Error(JSON.stringify(resFoto.resposta));
 
         const consultaTurma = (
             `SELECT t.nome FROM alunos INNER JOIN turmas as t 
