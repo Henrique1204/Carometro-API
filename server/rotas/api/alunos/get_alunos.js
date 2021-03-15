@@ -14,7 +14,8 @@ module.exports = async (req, res) => {
 
         if (!ok) throw new Error(JSON.stringify(resposta));
 
-        res.status(200).send(resposta);
+        if (id) res.status(200).send(resposta[0]);
+        else res.status(200).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 

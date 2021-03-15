@@ -19,7 +19,8 @@ module.exports = async (req, res) => {
             data_criacao: ocorrencia.data_criacao.toISOString().split('T')[0]
         }));
 
-        res.status(200).send(dados);
+        if (id) res.status(200).send(dados[0]);
+        else res.status(200).send(dados);
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 

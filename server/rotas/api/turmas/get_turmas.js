@@ -27,7 +27,8 @@ module.exports = async (req, res) => {
             alunos: filtrarAlunos(resAlunos.resposta, turma.id)
         }));
 
-        res.status(200).send(dados);
+        if (id) res.status(200).send(dados[0]);
+        else res.status(200).send(dados);
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 
