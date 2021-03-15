@@ -1,4 +1,4 @@
-const { select } = require('../../db/consultas.js');
+const { query } = require('../../db/consultas.js');
 const jwt = require('jsonwebtoken');
 //Blibioteca para criptografar senha.
 const { SHA224 } = require("sha2");
@@ -8,18 +8,18 @@ module.exports = async (req, res) => {
         const { NI: NI_body, senha } = req.body;
 
         if (!NI_body || !senha) {
-            const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
-            throw new Error(erro);
+            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
+            throw new Error(JSON.stringify(erro));
         }
 
         // criptografada.
         const senhaCri = SHA224(senha.toString()).toString("hex");
         
-        const consulta = (
+        const sql = (
             `SELECT * FROM usuarios WHERE senha = '${senhaCri}' AND NI = '${NI_body.toString()}'`
         );
     
-        const { ok, resposta } = await select(consulta, 'usuarios');
+        const { ok, resposta } = await query(sql, { tabela: 'usuarios', tipo: 'buscar' });
         if (!ok) throw new Error(JSON.stringify(resposta));
     
         if (resposta.length === 0) {
@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
             });
         }
 
-        res.status(202).send({
+        return res.status(202).send({
             auth: true,
             token,
             usuario: { NI, nome, isAdmin: isAdmin !== 0 }
@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 
-        if (erroSQL) res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
-        else res.status(cod).send({ status: 'Falha', mensagem });
+        if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+        else return res.status(cod).send({ status: 'Falha', mensagem });
     }
 }

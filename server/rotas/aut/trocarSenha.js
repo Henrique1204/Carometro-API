@@ -1,4 +1,4 @@
-const { select, update } = require('../../db/consultas.js');
+const { query } = require('../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {
@@ -9,9 +9,8 @@ module.exports = async (req, res) => {
             throw new Error(JSON.stringify(erro));
         }
 
-        const consultaSelect = `SELECT * FROM usuarios WHERE NI = '${NI}'`;
-
-        const resSelect = await select(consultaSelect, 'usuarios');
+        const sqlSelect = `SELECT * FROM usuarios WHERE NI = '${NI}'`;
+        const resSelect = await query(sqlSelect, { tabela: 'usuarios', tipo: 'buscar' });
         if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
 
         if (resSelect.resposta.length === 0) {
@@ -19,18 +18,18 @@ module.exports = async (req, res) => {
             throw new Error(JSON.stringify(erro));
         }
 
-        const consultaUpdate = (
+        const sqlUpdate = (
             `UPDATE usuarios SET senha = SHA2('${senha.toString()}', 224) WHERE NI = '${NI}'`
         );
 
-        const resUpdate = await update(consultaUpdate, 'usuarios');
+        const resUpdate = await query(sqlUpdate, { tabela: 'usuarios', tipo: 'atualizar' });
         if (!resUpdate.ok) throw new Error(JSON.stringify(resUpdate.resposta));
 
-        res.status(201).send(resUpdate.resposta);
+        return res.status(201).send(resUpdate.resposta);
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 
-        if (erroSQL) res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
-        else res.status(cod).send({ status: 'Falha', mensagem });
+        if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+        else return res.status(cod).send({ status: 'Falha', mensagem });
     }
 }
