@@ -8,8 +8,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Configurando CORS.
-const corsConfig = require('./corsCofnig.js');
-corsConfig(app);
+const cors = require('cors');
+app.use(cors({ origin: true, credentials: true} ));
 
 // Carregando banco de dados.
 const conexaoDB = require('./db/conexao.js');
