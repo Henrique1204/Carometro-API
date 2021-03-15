@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
         }
     
         const sql = `DELETE FROM ocorrencias WHERE id = ${id}`;
-        const { ok, resposta } = await query(sql, { tabela: 'ocorrencias', tipo: 'deletar' });
+        const { ok, resposta } = await query(sql, 'ocorrencias', 'delete');
         if (!ok) throw new Error(JSON.stringify(resposta));
 
         return res.status(201).send(resposta);

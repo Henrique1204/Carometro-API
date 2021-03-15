@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
             ORDER BY t.id`
         );
 
-        const resTurmas = await query(sqlTurmas, { tabela: 'turmas', tipo: 'buscar' });
+        const resTurmas = await query(sqlTurmas, 'turmas', 'select');
         if (!resTurmas.ok) throw new Error(JSON.stringify(resTurmas.resposta));
 
         if (id && resTurmas.resposta.length === 0) {

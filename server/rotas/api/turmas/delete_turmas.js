@@ -8,18 +8,9 @@ module.exports = async (req, res) => {
             const erro = { cod: 406, mensagem: 'Dados inválidos!' };
             throw new Error(JSON.stringify(erro));
         }
-    
-        const sqlSelect = `SELECT * FROM turmas WHERE id = '${id}'`;
-        const resSelect = await query(sqlSelect, { tabela: 'turmas', tipo: 'buscar' });
-        if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
-
-        if (resSelect.resposta.length === 0) {
-            const erro = { cod: 404, mensagem: 'Turma informada não existe.' };
-            throw new Error(JSON.stringify(erro));
-        }
 
         const sqlUpdate = `UPDATE turmas SET formado = 1 WHERE id = ${id}`;
-        const resUpdate = await query(sqlUpdate, { tabela: 'turmas', tipo: 'atualizar' });
+        const resUpdate = await query(sqlUpdate, 'turmas', 'update');
         if (!resUpdate.ok) throw new Error(JSON.stringify(resUpdate.resposta));
 
         return res.status(201).send(resUpdate.resposta);

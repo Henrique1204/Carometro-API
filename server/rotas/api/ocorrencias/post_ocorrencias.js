@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
             (null, '${titulo}', '${conteudo}', '${data}', '${criado_por}', ${id_aluno})`
         );
     
-        const { ok, resposta } = await query(sql, { tabela: 'ocorrencias', tipo: 'adicionar' });
+        const { ok, resposta } = await query(sql, 'ocorrencias', 'insert');
         if (!ok) throw new Error(JSON.stringify(resposta));
         return res.status(201).send(resposta);
     } catch ({ message }) {

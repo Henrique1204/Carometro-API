@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
         }
 
         const sqlSelect = `SELECT * FROM usuarios WHERE NI = '${NI}'`;
-        const resSelect = await qeury(sqlSelect, { tabela: 'usuarios', tipo: 'buscar' });
+        const resSelect = await query(sqlSelect, 'usuarios', 'select');
         if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
 
         if (resSelect.resposta.length !== 0) {
@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
             (null, '${NI}', '${nome}', SHA2('${senha.toString()}', 224), ${isAdmin})`
         );
 
-        const resInsert = await query(sqlInsert, { tabela: 'usuarios', tipo: 'adicionar' });
+        const resInsert = await query(sqlInsert, 'usuarios', 'insert');
         if (!resInsert.ok) throw new Error(JSON.stringify(resInsert.resposta));
 
         return res.status(201).send(resInsert.resposta);

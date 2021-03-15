@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
         }
 
         const sql = `SELECT * FROM cursos ${where} ORDER BY id`;
-        const { ok, resposta } = await query(sql, { tabela: 'cursos', tipo: 'buscar' });
+        const { ok, resposta } = await query(sql, 'cursos', 'select');
         if (!ok) throw new Error(JSON.stringify(resposta));
 
         if (id && resposta.length === 0) {

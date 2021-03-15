@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
             FROM ocorrencias as o INNER JOIN alunos ON alunos.id = o.id_aluno ${where} ORDER by o.id`
         );
 
-        const { ok, resposta } = await query(sql, { tabela: 'ocorrencias', tipo: 'buscar' });
+        const { ok, resposta } = await query(sql, 'ocorrencias', 'select');
         if (!ok) throw new Error(JSON.stringify(resposta));
 
         if (id && resposta.length === 0) {

@@ -15,20 +15,11 @@ module.exports = async (req, res) => {
             throw new Error(JSON.stringify(erro));
         }
 
-        const sqlSelect = `SELECT * FROM turmas WHERE id = '${id}'`;
-        const resSelect = await query(sqlSelect, { tabela: 'turmas', tipo: 'buscar' });
-        if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
+        const sql = `UPDATE turmas SET nome = '${nome}' WHERE id = ${id}`;    
+        const { ok, resposta } = await query(sql, 'turmas', 'update');
+        if (!ok) throw new Error(JSON.stringify(resposta));
 
-        if (resSelect.resposta.length === 0) {
-            const erro = { cod: 404, mensagem: 'Turma informada não existe.' };
-            throw new Error(JSON.stringify(erro));
-        }
-
-        const sqlUpdate = `UPDATE turmas SET nome = '${nome}' WHERE id = ${id}`;    
-        const resUpdate = await query(sqlUpdate, { tabela: 'turmas', tipo: 'atualizar' });
-        if (!resUpdate.ok) throw new Error(JSON.stringify(resUpdate.resposta));
-
-        return res.status(201).send(resUpdate.resposta);
+        return res.status(201).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 

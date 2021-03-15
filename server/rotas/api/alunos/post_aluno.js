@@ -20,8 +20,7 @@ module.exports = async (req, res) => {
         }
 
         const sqlSelect = `SELECT * FROM alunos WHERE email = '${email}'`;
-
-        const resSelect = await query(sqlSelect, { tabela: 'alunos', tipo: 'buscar' });
+        const resSelect = await query(sqlSelect, 'alunos', 'select' );
         if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
 
         if (resSelect.resposta.length !== 0) {
@@ -33,7 +32,7 @@ module.exports = async (req, res) => {
             `SELECT t.nome FROM alunos INNER JOIN turmas as t ON alunos.id_turma = t.id`
         );
 
-        const resTurma = await query(sqlTurma, { tabela: 'turmas', tipo: 'buscar' });
+        const resTurma = await query(sqlTurma, 'turmas', 'select');
         if (!resTurma.ok) throw new Error(JSON.stringify(resTurma.resposta));
 
         const arquivo = await moverArquivo(resTurma.resposta[0].nome, foto);
@@ -44,7 +43,7 @@ module.exports = async (req, res) => {
             (null, '${nome}', '${email}', '${telefone}', '${data_nascimento}', '${foto}', '${id_turma}')`
         );
 
-        const resInsert = await query(sqlInsert, { tablea: 'alunos', tipo: 'adicionar' });
+        const resInsert = await query(sqlInsert, 'alunos', 'insert');
         if (!resInsert.ok) throw new Error(JSON.stringify(resInsert.resposta));
 
         return res.status(201).send(resInsert.resposta);

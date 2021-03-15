@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
         }
 
         const sqlFoto = `SELECT foto, email FROM alunos WHERE id = ${id}`;
-        const resFoto = await query(sqlFoto, { tabela: 'alunos', tipo: 'buscar' });
+        const resFoto = await query(sqlFoto, 'alunos', 'select');
         if (!resFoto.ok) throw new Error(JSON.stringify(resFoto.resposta));
 
         if (resFoto.resposta.length === 0) {
@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
         }
 
         const sqlEmail = `SELECT * FROM alunos WHERE email = '${email}'`;
-        const resEmail = await query(sqlEmail, { tabela: 'alunos', tipo: 'buscar' });
+        const resEmail = await query(sqlEmail, 'alunos', 'select');
         if (!resEmail.ok) throw new Error(JSON.stringify(resEmail.resposta));
 
         if (resEmail.resposta.length !== 0 && resFoto.resposta[0].email !== email) {
@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
             ON alunos.id_turma = t.id WHERE id_turma = ${id_turma}`
         );
 
-        const resTurma = await query(sqlTurma, { tabela: 'turmas', tipo: 'buscar' });
+        const resTurma = await query(sqlTurma, 'turmas', 'select');
         if (!resTurma.ok) throw new Error(JSON.stringify(resTurma.resposta));
 
         const arquivo = await moverArquivo(resTurma.resposta[0].nome, foto);
@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
             foto = '${foto}', id_turma = '${id_turma}' WHERE id = ${id}`
         );
 
-        const resUpdate = await query(sqlUpdate, { tabela: 'alunos', tipo: 'atualizar' });
+        const resUpdate = await query(sqlUpdate, 'alunos', 'insert');
         if (!resUpdate.ok) throw new Error(JSON.stringify(resUpdate.resposta));
 
         unlink(resFoto.resposta[0].foto, () => {});

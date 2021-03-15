@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
             VALUES (null, '${nome}', '${id_curso}', 0)`
         );
 
-        const { ok, resposta } = await query(sql, { tabela: 'turmas', tipo: 'adicionar' });
+        const { ok, resposta } = await query(sql, 'turmas', 'insert');
         if (!ok) throw new Error(JSON.stringify(resposta));
         return res.status(201).send(resposta);
     } catch ({ message }) {

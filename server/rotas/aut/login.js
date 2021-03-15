@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
             `SELECT * FROM usuarios WHERE senha = '${senhaCri}' AND NI = '${NI_body.toString()}'`
         );
     
-        const { ok, resposta } = await query(sql, { tabela: 'usuarios', tipo: 'buscar' });
+        const { ok, resposta } = await query(sql, 'usuarios', 'select');
         if (!ok) throw new Error(JSON.stringify(resposta));
     
         if (resposta.length === 0) {

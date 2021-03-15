@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
             `INSERT INTO cursos (id, nome, periodo) VALUES (null, '${nome}', '${periodo}')`
         );
 
-        const { ok, resposta } = await query(sql, { tabela: 'cursos', tipo: 'adicionar' });
+        const { ok, resposta } = await query(sql, 'cursos', 'insert');
         if (!ok) throw new Error(JSON.stringify(resposta));
 
         return res.status(201).send(resposta);

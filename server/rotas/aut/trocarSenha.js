@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
             `UPDATE usuarios SET senha = SHA2('${senha.toString()}', 224) WHERE NI = '${NI}'`
         );
 
-        const resUpdate = await query(sqlUpdate, { tabela: 'usuarios', tipo: 'atualizar' });
+        const resUpdate = await query(sqlUpdate, 'usuarios', 'update');
         if (!resUpdate.ok) throw new Error(JSON.stringify(resUpdate.resposta));
 
         return res.status(201).send(resUpdate.resposta);

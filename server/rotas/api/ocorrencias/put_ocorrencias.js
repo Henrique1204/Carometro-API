@@ -15,23 +15,14 @@ module.exports = async (req, res) => {
             throw new Error(JSON.stringify(erro));
         }
 
-        const sqlSelect = `SELECT * FROM ocorrencias WHERE id = '${id}'`;
-        const resSelect = await query(sqlSelect, { tabela: 'ocorrencias', tipo: 'buscar' });
-        if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
-
-        if (resSelect.resposta.length === 0) {
-            const erro = { cod: 404, mensagem: 'Ocorrência informada não existe.' };
-            throw new Error(JSON.stringify(erro));
-        }
-
-        const sqlUpdate = (
+        const sql = (
             `UPDATE ocorrencias SET titulo = '${titulo}', conteudo = '${conteudo}' 
             WHERE id = ${id}`
         );
     
-        const resUpdate = await query(sqlUpdate, { tablea: 'ocorrencias', tipo: 'atualizar' });
-        if (!resUpdate.ok) throw new Error(JSON.stringify(resUpdate.resposta));
-        return res.status(201).send(resUpdate.resposta);
+        const { ok, resposta }  = await query(sql, 'ocorrencias', 'update');
+        if (!ok) throw new Error(JSON.stringify(resposta));
+        return res.status(201).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 
