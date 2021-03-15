@@ -1,33 +1,33 @@
-const { select, deleteSQL } = require('../../../db/consultas.js');
+const { query } = require('../../../db/consultas.js');
 const { unlink } = require('fs');
 
 module.exports = async (req, res) => {
     try {
         const { id } = req.params;
 
-        if (!id) {
-            const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
-            throw new Error(erro);
+        if (isNaN(id)) {
+            const erro = { cod: 406, mensagem: 'Dados inválidos!' };
+            throw new Error(JSON.stringify(erro));
         }
 
-        const consultaSelect = `SELECT foto FROM alunos WHERE id = ${id}`;
-        const consultaAlunos = `DELETE FROM alunos WHERE id = ${id}`;
-        const consultaOcorrencias = `DELETE FROM ocorrencias WHERE id_aluno = ${id}`;
-
-        const resSelect = await select(consultaSelect, 'alunos');
+        const sqlSelect = `SELECT foto FROM alunos WHERE id = ${id}`;
+        const resSelect = await query(sqlSelect, { tabela: 'alunos', tipo: 'buscar' });
         if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
 
-        const resAlunos = await deleteSQL(consultaAlunos, 'alunos', id);
+        const sqlAlunos = `DELETE FROM alunos WHERE id = ${id}`;
+        const resAlunos = await query(sqlAlunos, { tabela: 'alunos', tipo: 'deletar' });
         if (!resAlunos.ok) throw new Error(JSON.stringify(resAlunos.resposta));
+
         unlink(resSelect.resposta[0].foto, () => {});
 
-        await deleteSQL(consultaOcorrencias, 'ocorrencias', id);
+        const sqlOcorrencias = `DELETE FROM ocorrencias WHERE id_aluno = ${id}`;
+        await query(sqlOcorrencias, {  tabela: 'ocorrencias', tipo: 'deletar'});
 
-        res.status(201).send(resAlunos.resposta);
+        return res.status(201).send(resAlunos.resposta);
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 
-        if (erroSQL) res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
-        else res.status(cod).send({ status: 'Falha', mensagem });
+        if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+        else return res.status(cod).send({ status: 'Falha', mensagem });
     }
 };

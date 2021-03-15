@@ -1,4 +1,4 @@
-const { select, update } = require('../../../db/consultas.js');
+const { query } = require('../../../db/consultas.js');
 const moverArquivo = require('../../../util/moverArquivo.js');
 const { unlink } = require('fs');
 
@@ -10,23 +10,27 @@ module.exports = async (req, res) => {
         foto = req.file?.path.replace('\\', '/');
         const { id } = req.params;
 
-        if (!nome || !email || !telefone || !foto || !id_turma || !id) {
+        if (!nome || !email || !telefone || !foto || !id_turma) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
             throw new Error(erro);
         }
 
-        if (isNaN(id_turma)) {
-            const erro = JSON.stringify({ cod: 406, mensagem: "Dados inválidos!" });
-            throw new Error(erro);
+        if (isNaN(id_turma) || isNaN(id)) {
+            const erro = { cod: 406, mensagem: "Dados inválidos!" };
+            throw new Error(JSON.stringify(erro));
         }
 
-        const consultaFoto = `SELECT foto, email FROM alunos WHERE id = ${id}`;
-        const resFoto = await select(consultaFoto, 'alunos');
+        const sqlFoto = `SELECT foto, email FROM alunos WHERE id = ${id}`;
+        const resFoto = await query(sqlFoto, { tabela: 'alunos', tipo: 'buscar' });
         if (!resFoto.ok) throw new Error(JSON.stringify(resFoto.resposta));
 
-        const consultaEmail = `SELECT * FROM alunos WHERE email = '${email}'`;
+        if (resFoto.resposta.length === 0) {
+            const erro = { cod: 404, mensagem: 'Aluno informado não existe.' };
+            throw new Error(JSON.stringify(erro));
+        }
 
-        const resEmail = await select(consultaEmail, 'alunos');
+        const sqlEmail = `SELECT * FROM alunos WHERE email = '${email}'`;
+        const resEmail = await query(sqlEmail, { tabela: 'alunos', tipo: 'buscar' });
         if (!resEmail.ok) throw new Error(JSON.stringify(resEmail.resposta));
 
         if (resEmail.resposta.length !== 0 && resFoto.resposta[0].email !== email) {
@@ -34,32 +38,32 @@ module.exports = async (req, res) => {
             throw new Error(JSON.stringify(erro));
         }
 
-        const consultaTurma = (
+        const sqlTurma = (
             `SELECT t.nome FROM alunos INNER JOIN turmas as t 
             ON alunos.id_turma = t.id WHERE id_turma = ${id_turma}`
         );
 
-        const resTurma = await select(consultaTurma, 'turmas');
+        const resTurma = await query(sqlTurma, { tabela: 'turmas', tipo: 'buscar' });
         if (!resTurma.ok) throw new Error(JSON.stringify(resTurma.resposta));
 
         const arquivo = await moverArquivo(resTurma.resposta[0].nome, foto);
         foto = arquivo.foto;
 
-        const consultaUpdate = (
+        const sqlUpdate = (
             `UPDATE alunos SET nome = '${nome}', email = '${email}', telefone = '${telefone}', 
             foto = '${foto}', id_turma = '${id_turma}' WHERE id = ${id}`
         );
 
-        const resUpdate = await update(consultaUpdate, 'alunos', id);
+        const resUpdate = await query(sqlUpdate, { tabela: 'alunos', tipo: 'atualizar' });
         if (!resUpdate.ok) throw new Error(JSON.stringify(resUpdate.resposta));
 
         unlink(resFoto.resposta[0].foto, () => {});
-        res.status(201).send(resUpdate.resposta);
+        return res.status(201).send(resUpdate.resposta);
     } catch ({ message }) {
         unlink(foto, () => {});
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 
-        if (erroSQL) res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
-        else res.status(cod).send({ status: 'Falha', mensagem });
+        if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+        else return res.status(cod).send({ status: 'Falha', mensagem });
     }
 };
