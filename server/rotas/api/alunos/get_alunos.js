@@ -4,6 +4,11 @@ module.exports = async (req, res) => {
     try {
         const { id } = req.params;
 
+        if (id && isNaN(id)) {
+            const erro = { cod: 406, mensagem: "Dados inválidos!" };
+            throw new Error(JSON.stringify(erro));
+        }
+
         const sql = (
             `SELECT a.id, a.nome, a.email, a.telefone, a.data_nascimento, a.foto, t.nome AS turma, 
             t.formado FROM alunos AS a INNER JOIN turmas AS t ON a.id_turma = t.id 
