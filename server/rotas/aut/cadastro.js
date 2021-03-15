@@ -2,25 +2,20 @@ const { select, insert } = require('../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {
-        const { usuario, email, senha, isAdmin } = req.body;
+        const { NI, nome, senha, isAdmin } = req.body;
 
-        if (!usuario || !email || !senha) {
+        if (!NI || !nome || !senha) {
             const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
             throw new Error(erro);
         }
 
         if (isAdmin !== 0 && isAdmin !== 1) {
-            const erro = JSON.stringify({ cod: 406, mensagem: "Dados inválidos!" });
+            const erro = JSON.stringify({ cod: 406, mensagem: "Defina o nível de permissões corretamente!" });
             throw new Error(erro);
         }
 
         const consultaSelect = (
-            `SELECT * FROM usuarios WHERE usuario = '${usuario}' OR email = '${email}'`
-        );
-
-        const consultInsert = (
-            `INSERT INTO usuarios (id, usuario, email, senha, isAdmin) VALUES 
-            (null, '${usuario}', '${email}', SHA2('${senha.toString()}', 224), ${isAdmin})`
+            `SELECT * FROM usuarios WHERE NI = '${NI}'`
         );
 
         const resSelect = await select(consultaSelect, 'usuarios');
@@ -30,6 +25,11 @@ module.exports = async (req, res) => {
             const erro = { cod: 422, mensagem: 'Usuário já existe!' };
             throw new Error(JSON.stringify(erro));
         }
+
+        const consultInsert = (
+            `INSERT INTO usuarios (id, NI, nome, senha, isAdmin) VALUES 
+            (null, '${NI}', '${nome}', SHA2('${senha.toString()}', 224), ${isAdmin})`
+        );
 
         const resInsert = await insert(consultInsert, 'usuarios');
         if (!resInsert.ok) throw new Error(JSON.stringify(resInsert.resposta));

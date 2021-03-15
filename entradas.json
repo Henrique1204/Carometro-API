@@ -1,11 +1,11 @@
 {
     "post/login": {
-        "usuario": "Átila OU atila@gmail.com",
+        "usuario": "222",
         "senha": "1234"
     },
     "post/cadastro": {
-        "usuario": "Paulo",
-        "email": "paulo@gmail.com",
+        "usuario": "444",
+        "email": "Paulo",
         "senha": "5678",
         "isAdmin": 0
     },
