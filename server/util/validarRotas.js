@@ -4,8 +4,6 @@ const jwt = require('jsonwebtoken');
 module.exports = (req, res, next) => {
     try {
         const token = req.headers['x-access-token'];
-        const method = req.method;
-        const url = req.url;
         let isValido = false;
 
         if (!token) {
@@ -13,7 +11,7 @@ module.exports = (req, res, next) => {
             throw new Error(JSON.stringify(erro));
         }
 
-        if (method === 'GET' || url === '/validarToken' || url === '/trocarSenha') {
+        if (req.method === 'GET' || req.url === '/validarToken') {
             jwt.verify(token, process.env.SEGREDO_USER, function(erro, decoded) {
                 if (!erro) {
                     isValido = true;
