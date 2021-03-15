@@ -14,9 +14,7 @@ module.exports = async (req, res) => {
             throw new Error(erro);
         }
 
-        const consultaSelect = (
-            `SELECT * FROM usuarios WHERE NI = '${NI}'`
-        );
+        const consultaSelect = `SELECT * FROM usuarios WHERE NI = '${NI}'`;
 
         const resSelect = await select(consultaSelect, 'usuarios');
         if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));

@@ -9,6 +9,10 @@
         "senha": "5678",
         "isAdmin": 0
     },
+    "put/trocarSenha": {
+        "NI": "333",
+        "senha": "1234"
+    },
     "post/cursos": {
         "nome": "Mecânica",
         "periodo": "noite"

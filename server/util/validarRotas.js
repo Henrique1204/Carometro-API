@@ -4,14 +4,16 @@ const jwt = require('jsonwebtoken');
 module.exports = (req, res, next) => {
     try {
         const token = req.headers['x-access-token'];
-        isValido = false;
+        const method = req.method;
+        const url = req.url;
+        let isValido = false;
 
         if (!token) {
             const erro = { cod: 401, mensagem: 'Token não informado.' };
             throw new Error(JSON.stringify(erro));
         }
 
-        if (req.method === 'GET' || req.url === '/validarToken') {
+        if (method === 'GET' || url === '/validarToken' || url === '/trocarSenha') {
             jwt.verify(token, process.env.SEGREDO_USER, function(erro, decoded) {
                 if (!erro) {
                     isValido = true;
@@ -29,7 +31,7 @@ module.exports = (req, res, next) => {
 
         if (!isValido) {
             const erro = {
-                cod: 500,
+                cod: 403,
                 mensagem: 'Você não tem autorização necessária para continuar.'
             };
             throw new Error(JSON.stringify(erro));

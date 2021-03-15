@@ -25,7 +25,6 @@ module.exports = async (req, res) => {
     
         if (resposta.length === 0) {
             const erro = { cod: 404, mensagem: 'Dados inválidos.' };
-
             throw new Error(JSON.stringify(erro));
         }
 
