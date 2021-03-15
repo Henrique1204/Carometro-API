@@ -11,8 +11,8 @@ module.exports = async (req, res) => {
         const { id } = req.params;
 
         if (!nome || !email || !telefone || !foto || !id_turma) {
-            const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
-            throw new Error(erro);
+            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
+            throw new Error(JSON.stringify(erro));
         }
 
         if (isNaN(id_turma) || isNaN(id)) {

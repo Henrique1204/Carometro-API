@@ -6,8 +6,8 @@ module.exports = async (req, res) => {
         const { id } = req.params;
 
         if (!titulo || !conteudo || !id) {
-            const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
-            throw new Error(erro);
+            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
+            throw new Error(JSON.stringify(erro));
         }
 
         if (isNaN(id)) {

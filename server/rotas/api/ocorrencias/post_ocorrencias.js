@@ -5,13 +5,13 @@ module.exports = async (req, res) => {
         const { titulo, conteudo, criado_por, id_aluno } = req.body;
 
         if (!titulo || !conteudo || !criado_por || !id_aluno ) {
-            const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
-            throw new Error(erro);
+            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
+            throw new Error(JSON.stringify(erro));
         }
 
         if (isNaN(id_aluno)) {
-            const erro = JSON.stringify({ cod: 406, mensagem: "Dados inválidos!" });
-            throw new Error(erro);
+            const erro = { cod: 406, mensagem: "Dados inválidos!" };
+            throw new Error(JSON.stringify(erro));
         }
 
         const data = new Date().toISOString().split('T')[0];

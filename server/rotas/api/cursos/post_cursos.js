@@ -5,8 +5,8 @@ module.exports = async (req, res) => {
         const { nome, periodo } = req.body;
 
         if (!nome || !periodo ) {
-            const erro = JSON.stringify({ cod: 400, mensagem: 'Dados incompletos!' });
-            throw new Error(erro);
+            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
+            throw new Error(JSON.stringify(erro));
         }
 
         const sql = (
