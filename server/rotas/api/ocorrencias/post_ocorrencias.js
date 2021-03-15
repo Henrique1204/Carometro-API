@@ -1,4 +1,4 @@
-const { insert } = require('../../../db/consultas.js');
+const { query } = require('../../../db/consultas.js');
 
 module.exports = async (req, res) => {
     try {
@@ -16,20 +16,18 @@ module.exports = async (req, res) => {
 
         const data = new Date().toISOString().split('T')[0];
 
-        const consulta = (
+        const sql = (
             `INSERT INTO ocorrencias (id, titulo, conteudo, data_criacao, criado_por, id_aluno) VALUES
             (null, '${titulo}', '${conteudo}', '${data}', '${criado_por}', ${id_aluno})`
         );
     
-        const { ok, resposta } = await insert(consulta, 'ocorrencias');
-
+        const { ok, resposta } = await query(sql, { tabela: 'ocorrencias', tipo: 'adicionar' });
         if (!ok) throw new Error(JSON.stringify(resposta));
-
-        res.status(201).send(resposta);
+        return res.status(201).send(resposta);
     } catch ({ message }) {
         const { cod, mensagem, erroSQL } = JSON.parse(message);
 
-        if (erroSQL) res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
-        else res.status(cod).send({ status: 'Falha', mensagem });
+        if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+        else return res.status(cod).send({ status: 'Falha', mensagem });
     }
 };
