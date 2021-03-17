@@ -27,7 +27,7 @@ const query = (sql, tabela, tipo) => (
                 return resolve({ ok: false, resposta: erro });
             }
 
-            if (resDB.affectedRows === 0 && (tipo === 'delete' || tipo === 'update')) {
+            if (resDB.affectedRows === 0) {
                 const erro = { cod: 404, mensagem: 'Dado informado não existe.' };
                 return resolve({ ok: false, resposta: erro });
             }

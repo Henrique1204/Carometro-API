@@ -1,6 +1,7 @@
 const { query } = require('../../../db/consultas.js');
 const moverArquivo = require('../../../util/moverArquivo.js');
 const { unlink } = require('fs');
+const ExceptionAPI = require('../../../util/ExceptionAPI.js');
 
 module.exports = async (req, res) => {
     let foto;
@@ -12,30 +13,30 @@ module.exports = async (req, res) => {
 
         if (!nome || !email || !telefone || !foto || !id_turma) {
             const erro = { cod: 400, mensagem: 'Dados incompletos!' };
-            throw new Error(JSON.stringify(erro));
+            throw new ExceptionAPI(erro);
         }
 
         if (isNaN(id_turma) || isNaN(id)) {
             const erro = { cod: 406, mensagem: "Dados inválidos!" };
-            throw new Error(JSON.stringify(erro));
+            throw new ExceptionAPI(erro);
         }
 
         const sqlFoto = `SELECT foto, email FROM alunos WHERE id = ${id}`;
         const resFoto = await query(sqlFoto, 'alunos', 'select');
-        if (!resFoto.ok) throw new Error(JSON.stringify(resFoto.resposta));
+        if (!resFoto.ok) throw new ExceptionAPI(resFoto.resposta);
 
         if (resFoto.resposta.length === 0) {
             const erro = { cod: 404, mensagem: 'Aluno informado não existe.' };
-            throw new Error(JSON.stringify(erro));
+            throw new ExceptionAPI(erro);
         }
 
         const sqlEmail = `SELECT * FROM alunos WHERE email = '${email}'`;
         const resEmail = await query(sqlEmail, 'alunos', 'select');
-        if (!resEmail.ok) throw new Error(JSON.stringify(resEmail.resposta));
+        if (!resEmail.ok) throw new ExceptionAPI(resEmail.resposta);
 
         if (resEmail.resposta.length !== 0 && resFoto.resposta[0].email !== email) {
             const erro = { cod: 422, mensagem: 'E-mail pertence a outro aluno.' };
-            throw new Error(JSON.stringify(erro));
+            throw new ExceptionAPI(erro);
         }
 
         const sqlTurma = (
@@ -44,7 +45,7 @@ module.exports = async (req, res) => {
         );
 
         const resTurma = await query(sqlTurma, 'turmas', 'select');
-        if (!resTurma.ok) throw new Error(JSON.stringify(resTurma.resposta));
+        if (!resTurma.ok) throw new ExceptionAPI(resTurma.resposta);
 
         const arquivo = await moverArquivo(resTurma.resposta[0].nome, foto);
         foto = arquivo.foto;
@@ -55,15 +56,20 @@ module.exports = async (req, res) => {
         );
 
         const resUpdate = await query(sqlUpdate, 'alunos', 'insert');
-        if (!resUpdate.ok) throw new Error(JSON.stringify(resUpdate.resposta));
+        if (!resUpdate.ok) throw new ExceptionAPI(resUpdate.resposta);
 
         unlink(resFoto.resposta[0].foto, () => {});
         return res.status(201).send(resUpdate.resposta);
-    } catch ({ message }) {
-        unlink(foto, () => {});
-        const { cod, mensagem, erroSQL } = JSON.parse(message);
+    } catch (erro) {
+        if (foto) unlink(foto, () => {});
 
-        if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
-        else return res.status(cod).send({ status: 'Falha', mensagem });
+        if (erro.tipo === 'API') {
+            const { cod, mensagem, erroSQL } = erro;
+
+            if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+            return res.status(cod).send({ status: 'Falha', mensagem });
+        }
+
+        return res.status(500).send({ status: 'Falha', mensagem: erro.message });
     }
 };

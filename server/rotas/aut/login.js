@@ -2,6 +2,7 @@ const { query } = require('../../db/consultas.js');
 const jwt = require('jsonwebtoken');
 //Blibioteca para criptografar senha.
 const { SHA224 } = require("sha2");
+const ExceptionAPI = require('../../util/ExceptionAPI.js');
 
 module.exports = async (req, res) => {
     try {
@@ -9,7 +10,7 @@ module.exports = async (req, res) => {
 
         if (!NI_body || !senha) {
             const erro = { cod: 400, mensagem: 'Dados incompletos!' };
-            throw new Error(JSON.stringify(erro));
+            throw new ExceptionAPI(erro);
         }
 
         // criptografada.
@@ -20,11 +21,11 @@ module.exports = async (req, res) => {
         );
     
         const { ok, resposta } = await query(sql, 'usuarios', 'select');
-        if (!ok) throw new Error(JSON.stringify(resposta));
+        if (!ok) throw new ExceptionAPI(resposta);
     
         if (resposta.length === 0) {
             const erro = { cod: 404, mensagem: 'Dados inválidos.' };
-            throw new Error(JSON.stringify(erro));
+            throw new ExceptionAPI(erro);
         }
 
         const { id, NI, nome, isAdmin } = resposta[0]; 
@@ -45,10 +46,14 @@ module.exports = async (req, res) => {
             token,
             usuario: { NI, nome, isAdmin: isAdmin !== 0 }
         });
-    } catch ({ message }) {
-        const { cod, mensagem, erroSQL } = JSON.parse(message);
+    } catch (erro) {
+        if (erro.tipo === 'API') {
+            const { cod, mensagem, erroSQL } = erro;
 
-        if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
-        else return res.status(cod).send({ status: 'Falha', mensagem });
+            if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+            return res.status(cod).send({ status: 'Falha', mensagem });
+        }
+
+        return res.status(500).send({ status: 'Falha', mensagem: erro.message });
     }
 }

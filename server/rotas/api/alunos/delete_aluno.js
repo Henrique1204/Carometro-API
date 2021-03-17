@@ -1,5 +1,6 @@
 const { query } = require('../../../db/consultas.js');
 const { unlink } = require('fs');
+const ExceptionAPI = require('../../../util/ExceptionAPI.js');
 
 module.exports = async (req, res) => {
     try {
@@ -7,16 +8,16 @@ module.exports = async (req, res) => {
 
         if (isNaN(id)) {
             const erro = { cod: 406, mensagem: 'Dados inválidos!' };
-            throw new Error(JSON.stringify(erro));
+            throw new ExceptionAPI(erro);
         }
 
         const sqlSelect = `SELECT foto FROM alunos WHERE id = ${id}`;
         const resSelect = await query(sqlSelect, 'alunos', 'select' );
-        if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
+        if (!resSelect.ok) throw new ExceptionAPI(resSelect.resposta);
 
         const sqlAlunos = `DELETE FROM alunos WHERE id = ${id}`;
         const resAlunos = await query(sqlAlunos, 'alunos', 'delete' );
-        if (!resAlunos.ok) throw new Error(JSON.stringify(resAlunos.resposta));
+        if (!resAlunos.ok) throw new ExceptionAPI(resAlunos.resposta);
 
         unlink(resSelect.resposta[0].foto, () => {});
 
@@ -24,10 +25,14 @@ module.exports = async (req, res) => {
         await query(sqlOcorrencias, 'ocorrencias', 'delete');
 
         return res.status(201).send(resAlunos.resposta);
-    } catch ({ message }) {
-        const { cod, mensagem, erroSQL } = JSON.parse(message);
+    } catch (erro) {
+        if (erro.tipo === 'API') {
+            const { cod, mensagem, erroSQL } = erro;
 
-        if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
-        else return res.status(cod).send({ status: 'Falha', mensagem });
+            if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+            return res.status(cod).send({ status: 'Falha', mensagem });
+        }
+
+        return res.status(500).send({ status: 'Falha', mensagem: erro.message });
     }
 };

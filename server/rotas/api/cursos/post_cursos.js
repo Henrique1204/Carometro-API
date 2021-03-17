@@ -1,4 +1,5 @@
 const { query } = require('../../../db/consultas.js');
+const ExceptionAPI = require('../../../util/ExceptionAPI.js');
 
 module.exports = async (req, res) => {
     try {
@@ -6,7 +7,7 @@ module.exports = async (req, res) => {
 
         if (!nome || !periodo ) {
             const erro = { cod: 400, mensagem: 'Dados incompletos!' };
-            throw new Error(JSON.stringify(erro));
+            throw new ExceptionAPI(erro);
         }
 
         const sql = (
@@ -14,13 +15,17 @@ module.exports = async (req, res) => {
         );
 
         const { ok, resposta } = await query(sql, 'cursos', 'insert');
-        if (!ok) throw new Error(JSON.stringify(resposta));
+        if (!ok) throw new ExceptionAPI(resposta);
 
         return res.status(201).send(resposta);
-    } catch ({ message }) {
-        const { cod, mensagem, erroSQL } = JSON.parse(message);
+    } catch (erro) {
+        if (erro.tipo === 'API') {
+            const { cod, mensagem, erroSQL } = erro;
 
-        if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
-        else return res.status(cod).send({ status: 'Falha', mensagem });
+            if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+            return res.status(cod).send({ status: 'Falha', mensagem });
+        }
+
+        return res.status(500).send({ status: 'Falha', mensagem: erro.message });
     }
 };

@@ -1,6 +1,7 @@
-const { query, select, insert } = require('../../../db/consultas.js');
+const { query } = require('../../../db/consultas.js');
 const moverArquivo = require('../../../util/moverArquivo.js');
 const { unlink } = require('fs');
+const ExceptionAPI = require('../../../util/ExceptionAPI.js');
 
 module.exports = async (req, res) => {
     let foto;
@@ -11,21 +12,21 @@ module.exports = async (req, res) => {
 
         if (!nome || !email || !telefone || !data_nascimento || !foto || !id_turma ) {
             const erro = { cod: 400, mensagem: 'Dados incompletos!' };
-            throw new Error(JSON.stringify(erro));
+            throw new ExceptionAPI(erro);
         }
 
         if (isNaN(id_turma)) {
-            const erro = { cod: 406, mensagem: "Dados inválidos!" };
-            throw new Error(JSON.stringify(erro));
+            const erro = { cod: 406, mensagem: 'Dados inválidos!' };
+            throw new ExceptionAPI(erro);
         }
 
         const sqlSelect = `SELECT * FROM alunos WHERE email = '${email}'`;
         const resSelect = await query(sqlSelect, 'alunos', 'select' );
-        if (!resSelect.ok) throw new Error(JSON.stringify(resSelect.resposta));
+        if (!resSelect.ok) throw new ExceptionAPI(resSelect.resposta);
 
         if (resSelect.resposta.length !== 0) {
             const erro = { cod: 422, mensagem: 'Aluno já existe!' };
-            throw new Error(JSON.stringify(erro));
+            throw new ExceptionAPI(erro);
         }
 
         const sqlTurma = (
@@ -33,7 +34,7 @@ module.exports = async (req, res) => {
         );
 
         const resTurma = await query(sqlTurma, 'turmas', 'select');
-        if (!resTurma.ok) throw new Error(JSON.stringify(resTurma.resposta));
+        if (!resTurma.ok) throw new ExceptionAPI(resTurma.resposta);
 
         const arquivo = await moverArquivo(resTurma.resposta[0].nome, foto);
         foto = arquivo.foto;
@@ -44,14 +45,19 @@ module.exports = async (req, res) => {
         );
 
         const resInsert = await query(sqlInsert, 'alunos', 'insert');
-        if (!resInsert.ok) throw new Error(JSON.stringify(resInsert.resposta));
+        if (!resInsert.ok) throw new ExceptionAPI(resInsert.resposta);
 
         return res.status(201).send(resInsert.resposta);
-    } catch ({ message }) {
-        unlink(foto, () => {});
-        const { cod, mensagem, erroSQL } = JSON.parse(message);
+    } catch (erro) {
+        if (foto) unlink(foto, () => {});
 
-        if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
-        else return res.status(cod).send({ status: 'Falha', mensagem });
+        if (erro.tipo === 'API') {
+            const { cod, mensagem, erroSQL } = erro;
+
+            if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+            return res.status(cod).send({ status: 'Falha', mensagem });
+        }
+
+        return res.status(500).send({ status: 'Falha', mensagem: erro.message });
     }
 };
