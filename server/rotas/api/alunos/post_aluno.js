@@ -22,19 +22,12 @@ module.exports = async (req, res) => {
 
         // Testando se os dados passados na requisição estão vazios.
         if (!nome || !email || !telefone || !data_nascimento || !foto || !id_turma ) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
             // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
+            throw new ExceptionAPI(400);
         }
 
-        // Testando se o id_turma informado não é número.
-        if (isNaN(id_turma)) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 406, mensagem: 'Dados inválidos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se o id_turma informado não é número e lançando uma exceção.
+        if (isNaN(id_turma)) throw new ExceptionAPI(406);
         // ## VALIDAÇÃO DE ENTRADA - FIM
 
         // ## VALIDANDO SE ALUNO JÁ EXISTE - INICIO
@@ -43,20 +36,12 @@ module.exports = async (req, res) => {
         // Executa uma consulta no banco de dados e guarda a resposta.
         const resEmail = await query(sqlEmail, 'alunos', 'select' );
 
-        // Testa se a consulta não foi ok.
-        if (!resEmail.ok) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 406, mensagem: 'Dados inválidos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testa se a consulta não foi ok e lançando uma exceção.
+        if (!resEmail.ok) throw new ExceptionAPI(406);
 
-        // Testando se houve resposta para consulta no banco de dados.
+        // Testando se houve resposta para consulta no banco de dados e lançando uma exceção.
         if (resEmail.resposta.length !== 0) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 422, mensagem: 'Aluno já existe!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
+            throw new ExceptionAPI(422, { mensagem: 'Aluno já cadastrado.' });
         }
         // ## VALIDANDO SE ALUNO JÁ EXISTE - FIM
 
@@ -88,7 +73,7 @@ module.exports = async (req, res) => {
         // Executa uma consulta no banco de dados e guarda a resposta.
         const resInsert = await query(sqlInsert, 'alunos', 'insert');
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!resInsert.ok) throw new ExceptionAPI(resInsert.resposta);
+        if (!resInsert.ok) throw new ExceptionAPI(null, resInsert.resposta);
         // ## INSERINDO ALUNO NO BANCO DE DADOS - FIM
 
         // Retorna a resposta de sucesso do servidor.

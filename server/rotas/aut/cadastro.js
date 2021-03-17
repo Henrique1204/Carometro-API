@@ -11,21 +11,11 @@ module.exports = async (req, res) => {
         // Extraindo dados da requisição que foram passados no body.
         const { NI, nome, senha, isAdmin } = req.body;
 
-        // Testando se os dados passados na requisição estão vazios.
-        if (!NI || !nome || !senha) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se os dados passados na requisição estão vazios e lança uma exceção.
+        if (!NI || !nome || !senha) throw new ExceptionAPI(400);
 
-        // Testando se o valor de isAdmin não é 0 e 1
-        if (isAdmin !== 0 && isAdmin !== 1) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 406, mensagem: 'Dados inválidos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se o valor de isAdmin não é 0 e 1 e lança uma exceção.
+        if (isAdmin !== 0 && isAdmin !== 1) throw new ExceptionAPI(406);
         // ## VALIDAÇÃO DE ENTRADA - FIM
 
         // ## VALIDANDO SE O USUÁRIO JÁ NÃO ESTÁ CADASTRADAO - INICIO
@@ -36,10 +26,8 @@ module.exports = async (req, res) => {
 
         // Testando se houve resposta para consulta no banco de dados.
         if (resSelect.ok && resSelect.resposta.length !== 0) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 422, mensagem: 'Usuário já existe!' };
             // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
+            throw new ExceptionAPI(422, { mensagem: 'Usuário já existe!' });
         }
         // ## VALIDANDO SE O USUÁRIO JÁ NÃO ESTÁ CADASTRADAO - FIM
 
@@ -53,7 +41,7 @@ module.exports = async (req, res) => {
         // Executa uma consulta no banco de dados e guarda a resposta.
         const resInsert = await query(sqlInsert, 'usuarios', 'insert');
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!resInsert.ok) throw new ExceptionAPI(resInsert.resposta);
+        if (!resInsert.ok) throw new ExceptionAPI(null, resInsert.resposta);
         // ## INSERINDO USUARIO NO BANCO DE DADOS - INICIO
 
         // Retorna a resposta de sucesso do servidor.

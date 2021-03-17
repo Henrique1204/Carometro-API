@@ -1,15 +1,13 @@
 require("dotenv-safe").config();
 const jwt = require('jsonwebtoken');
+const ExceptionAPI = require('./ExceptionAPI.js');
 
 module.exports = (req, res, next) => {
     try {
         const token = req.headers['x-access-token'];
         let isValido = false;
 
-        if (!token) {
-            const erro = { cod: 401, mensagem: 'Token não informado.' };
-            throw new Error(JSON.stringify(erro));
-        }
+        if (!token) throw new ExceptionAPI(401);
 
         if (req.method === 'GET' || req.url === '/validarToken') {
             jwt.verify(token, process.env.SEGREDO_USER, function(erro, decoded) {
@@ -27,17 +25,17 @@ module.exports = (req, res, next) => {
             }
         });
 
-        if (!isValido) {
-            const erro = {
-                cod: 403,
-                mensagem: 'Você não tem autorização necessária para continuar.'
-            };
-            throw new Error(JSON.stringify(erro));
-        }
+        if (!isValido) throw new ExceptionAPI(403);
 
         next();
-    } catch ({ message }) {
-        const { cod, mensagem } = JSON.parse(message);
-        res.status(cod).send({ auth: false, mensagem });
+    } catch (erro) {
+        if (erro.tipo === 'API') {
+            const { cod, mensagem, erroSQL } = erro;
+
+            if (erroSQL) return res.status(cod).send({ status: 'Falha', mensagem, erroSQL });
+            return res.status(cod).send({ status: 'Falha', mensagem });
+        }
+
+        return res.status(500).send({ status: 'Falha', mensagem: erro.message });
     }
 }

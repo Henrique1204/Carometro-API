@@ -13,13 +13,8 @@ module.exports = async (req, res) => {
         // Extraindo a propriedade id do objeto params da requisição.
         const { id } = req.params;
 
-        // Testando se o id informado não é número.
-        if (isNaN(id)) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 406, mensagem: 'Dados inválidos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se o id informado não é número e lançando uma exceção.
+        if (isNaN(id)) throw new ExceptionAPI(406);
         // ## VALIDAÇÃO DE ENTRADA - FIM
 
         // ## BUSCANDO FOTO PARA SER REMOVIDA - INICIO
@@ -35,7 +30,7 @@ module.exports = async (req, res) => {
         // Executa uma consulta no banco de dados.
         const resAlunos = await query(sqlAlunos, 'alunos', 'delete' );
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!resAlunos.ok) throw new ExceptionAPI(resAlunos.resposta);
+        if (!resAlunos.ok) throw new ExceptionAPI(null, resAlunos.resposta);
 
         // Remove arquivo de foto.
         unlink(resSelect.resposta[0].foto, () => {});

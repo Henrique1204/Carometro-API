@@ -45,7 +45,7 @@ const query = (sql, tabela, tipo) => (
             // Testa se a consulta não realizou nenhuma mudança no banco de dados.
             if (resDB.affectedRows === 0) {
                 // Cria um objeto com as informações de erros.
-                const erro = { cod: 404, mensagem: 'Dado informado não existe.' };
+                const erro = { cod: 404, mensagem: 'Dados não encontrados.' };
                 // Resolve a promise enviando um objeto com as informações de erro.
                 return resolve({ ok: false, resposta: erro });
             }

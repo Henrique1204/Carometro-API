@@ -11,22 +11,17 @@ module.exports = async (req, res) => {
         // Extraindo a propriedade id do objeto params da requisição.
         const { id } = req.params;
 
-        // Testando se o id informado não é número.
-        if (isNaN(id)) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 406, mensagem: 'Dados inválidos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se o id informado não é número e lança uma exceção.
+        if (isNaN(id)) throw new ExceptionAPI(406);
         // ## VALIDAÇÃO DE ENTRADA - FIM
 
         // ## ATUALIZANDO DADOS TURMAS - INICIO
-        // Define o sql que deverá ser passado na consulta para atualizar turma .
+        // Define o sql que deverá ser passado na consulta para atualizar turma.
         const sqlUpdate = `UPDATE turmas SET formado = 1 WHERE id = ${id}`;
         // Executa uma consulta no banco de dados.
         const resUpdate = await query(sqlUpdate, 'turmas', 'update');
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!resUpdate.ok) throw new ExceptionAPI(resUpdate.resposta);
+        if (!resUpdate.ok) throw new ExceptionAPI(null, resUpdate.resposta);
         // ## REMOVENDO DADOS OCORRENCIAS - FIM
 
         // Retorna a resposta de sucesso do servidor.

@@ -13,21 +13,11 @@ module.exports = async (req, res) => {
         // Extraindo dados da requisição que foram passados no body.
         const { titulo, conteudo } = req.body;
 
-        // Testando se os dados passados na requisição estão vazios.
-        if (!titulo || !conteudo || !id) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se os dados passados na requisição estão vazios e lança uma exceção.
+        if (!titulo || !conteudo || !id) throw new ExceptionAPI(400);
 
-        // Testando se o id informados não são números.
-        if (isNaN(id)) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 406, mensagem: "Dados inválidos!" };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se o id informados não são números e lança uma exceção.
+        if (isNaN(id)) throw new ExceptionAPI(406);
         // ## VALIDAÇÃO DE ENTRADA - FIM
 
         // ## ATUALIZANDO OCORRENCIA NO BANCO DE DADOS - INICIO
@@ -40,12 +30,11 @@ module.exports = async (req, res) => {
         // Executa uma consulta no banco de dados e extraí as informações retornadas.
         const { ok, resposta }  = await query(sql, 'ocorrencias', 'update');
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!ok) throw new ExceptionAPI(resposta);
+        if (!ok) throw new ExceptionAPI(null, resposta);
         // ## ATUALIZANDO OCORRENCIA NO BANCO DE DADOS - FIM
 
         // Retorna a resposta de sucesso do servidor.
         return res.status(201).send(resposta);
-
 
     // Fechando bloco de teste e abrindo bloco de captura de exceções.
     } catch (erro) {

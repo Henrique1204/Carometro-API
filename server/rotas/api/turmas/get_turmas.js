@@ -13,13 +13,8 @@ module.exports = async (req, res) => {
         // Extraindo a propriedade id do objeto params da requisição.
         const { id } = req.params;
 
-        // Testando se o id informado não é número.
-        if (id && isNaN(id)) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 406, mensagem: 'Dados inválidos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se o id informado não é número e lança uma exceção.
+        if (id && isNaN(id)) throw new ExceptionAPI(406);
         // ## VALIDAÇÃO DE ENTRADA - FIM
 
         // ## BUSCANDO DADOS DE TURMAS - INICIO
@@ -33,14 +28,14 @@ module.exports = async (req, res) => {
         // Executa uma consulta no banco de dados e guarda a resposta.
         const resTurmas = await query(sqlTurmas, 'turmas', 'select');
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!resTurmas.ok) throw new ExceptionAPI(resTurmas.resposta);
+        if (!resTurmas.ok) throw new ExceptionAPI(null, resTurmas.resposta);
 
         // Executa uma consulta no banco de dados e guarda a resposta.
         const sqlAlunos = `SELECT * FROM alunos ${(id) ? `WHERE id_turma = ${id}` : ''}`;
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
         const resAlunos = await selectAlunos(sqlAlunos, id);
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!resAlunos.ok) throw new ExceptionAPI(resAlunos.resposta);
+        if (!resAlunos.ok) throw new ExceptionAPI(null, resAlunos.resposta);
 
         // Formatando dados para retorno.
         const dados = resTurmas.resposta.map((turma) => ({
@@ -51,11 +46,8 @@ module.exports = async (req, res) => {
         // ## BUSCANDO DADOS DE TURMAS - FIM
 
         // ## CONFERINDO TIPO DE RETORNO - INICIO
-        // Testa se a resposta retornada veio sem conteúdo.
-        if (id && resTurmas.resposta.length === 0) {
-            const erro = { cod: 404, mensagem: 'Dados não encontrados.' };
-            throw new ExceptionAPI(erro);
-        }
+        // Testa se a resposta retornada veio sem conteúdo e lança uma exceção.
+        if (id && resTurmas.resposta.length === 0) throw new ExceptionAPI(404);
 
         // Testa se o id foi informado e retorna a resposta de sucesso do servidor.
         if (id) return res.status(200).send(dados[0]);

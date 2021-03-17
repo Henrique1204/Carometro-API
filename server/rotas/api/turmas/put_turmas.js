@@ -13,21 +13,11 @@ module.exports = async (req, res) => {
         // Extraindo dados da requisição que foram passados no body.
         const { nome } = req.body;
 
-        // Testando se os dados passados na requisição estão vazios.
-        if (!nome || !id) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se os dados passados na requisição estão vazios e lança uma exceção.
+        if (!nome || !id) throw new ExceptionAPI(400);
 
-        // Testando se o id informados não são números.
-        if (isNaN(id)) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 406, mensagem: "Dados inválidos!" };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se o id informados não são números e lança uma exceção.
+        if (isNaN(id)) throw new ExceptionAPI(406);
         // ## VALIDAÇÃO DE ENTRADA - FIM
 
         // ## ATUALIZANDO TURMA NO BANCO DE DADOS - INICIO
@@ -36,7 +26,7 @@ module.exports = async (req, res) => {
         // Executa uma consulta no banco de dados e extraí as informações retornadas.
         const { ok, resposta } = await query(sql, 'turmas', 'update');
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!ok) throw new ExceptionAPI(resposta);
+        if (!ok) throw new ExceptionAPI(null, resposta);
         // ## ATUALIZANDO TURMA NO BANCO DE DADOS - FIM
 
         // Retorna a resposta de sucesso do servidor.

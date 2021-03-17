@@ -22,21 +22,11 @@ module.exports = async (req, res) => {
         // Definindo o valor da variável fotos com o caminho do arquivo passado na requisição
         foto = req.file?.path.replace('\\', '/');
 
-        // Testando se os dados passados na requisição estão vazios.
-        if (!nome || !email || !telefone || !foto || !id_turma) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se os dados passados na requisição estão vazios e lança uma exceção.
+        if (!nome || !email || !telefone || !foto || !id_turma) throw new ExceptionAPI(400);
 
-        // Testando se os ids informados não são números.
-        if (isNaN(id_turma) || isNaN(id)) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 406, mensagem: "Dados inválidos!" };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se os ids informados não são números e lança uma exceção.
+        if (isNaN(id_turma) || isNaN(id)) throw new ExceptionAPI(406);
         // ## VALIDAÇÃO DE ENTRADA - FIM
 
         // ## BUSCANDO INFORMAÇÕES PARA MANIPULAR FOTO E VALIDAR EMAIL - INICIO
@@ -45,21 +35,11 @@ module.exports = async (req, res) => {
         // Executa uma consulta no banco de dados.
         const resFoto = await query(sqlFoto, 'alunos', 'select');
 
-        // Testa se a consulta não foi ok.
-        if (!resFoto.ok) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 406, mensagem: 'Dados inválidos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testa se a consulta não foi ok e lança uma exceção.
+        if (!resFoto.ok) throw new ExceptionAPI(406);
 
-        // Testando se houve resposta para consulta no banco de dados.
-        if (resFoto.resposta.length === 0) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 404, mensagem: 'Aluno informado não existe.' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se houve resposta para consulta no banco de dados e lança uma exceção.
+        if (resFoto.resposta.length === 0) throw new ExceptionAPI(404);
 
         // Define o sql que deverá ser passado na consulta para buscar por aluno com igual igual.
         const sqlEmail = `SELECT * FROM alunos WHERE email = '${email}'`;
@@ -68,10 +48,8 @@ module.exports = async (req, res) => {
 
         // Testando se o e-mail é igual a algum outro aluno já inserido.
         if (resEmail.ok && resEmail.resposta.length !== 0 && resFoto.resposta[0].email !== email) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 422, mensagem: 'E-mail pertence a outro aluno.' };
             // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
+            throw new ExceptionAPI(422, { mensagem: 'E-mail pertence a outro aluno.' });
         }
         // ## BUSCANDO INFORMAÇÕES PARA MANIPULAR FOTO E VALIDAR EMAIL - INICIO
 
@@ -102,7 +80,7 @@ module.exports = async (req, res) => {
         // Executa uma consulta no banco de dados.
         const resUpdate = await query(sqlUpdate, 'alunos', 'update');
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!resUpdate.ok) throw new ExceptionAPI(resUpdate.resposta);
+        if (!resUpdate.ok) throw new ExceptionAPI(null, resUpdate.resposta);
 
         // Remove a foto antiga do usuário.
         unlink(resFoto.resposta[0].foto, () => {});

@@ -11,13 +11,8 @@ module.exports = async (req, res) => {
         // Extraindo a propriedade id do objeto params da requisição.
         const { id } = req.params;
 
-        // Testando se o id informado não é número.
-        if (isNaN(id)) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 406, mensagem: 'Dados inválidos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se o id informado não é número e lança uma exceção.
+        if (isNaN(id)) throw new ExceptionAPI(406);
         // ## VALIDAÇÃO DE ENTRADA - FIM
     
         // ## REMOVENDO DADOS OCORRENCIAS - INICIO
@@ -26,7 +21,7 @@ module.exports = async (req, res) => {
         // Executa uma consulta no banco de dados.
         const { ok, resposta } = await query(sql, 'ocorrencias', 'delete');
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!ok) throw new ExceptionAPI(resposta);
+        if (!ok) throw new ExceptionAPI(null, resposta);
         // ## REMOVENDO DADOS OCORRENCIAS - FIM
 
         // Retorna a resposta de sucesso do servidor.

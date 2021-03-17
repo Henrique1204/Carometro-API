@@ -15,13 +15,8 @@ module.exports = async (req, res) => {
         // Extraindo dados da requisição que foram passados no body.
         const { NI: NI_body, senha } = req.body;
 
-        // Testando se os dados passados na requisição estão vazios.
-        if (!NI_body || !senha) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se os dados passados na requisição estão vazios e lança uma exceção.
+        if (!NI_body || !senha) throw new ExceptionAPI(400);
         // ## VALIDAÇÃO DE ENTRADA - FIM
 
         // ## VALIDANDO OS DADOS BATEM - INICIO
@@ -35,13 +30,10 @@ module.exports = async (req, res) => {
 
         // Executa uma consulta no banco de dados e extraí as informações retornadas.
         const { ok, resposta } = await query(sql, 'usuarios', 'select');
-
         // Testando se não houve resposta para consulta no banco de dados.
-        if (!ok && resposta.length === 0) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 404, mensagem: 'Dados inválidos.' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
+        if (ok && resposta.length === 0) {
+            // Lança uma exceção.
+            throw new ExceptionAPI(404, { mensagem: 'Login inválido.' });
         }
         // ## VALIDANDO OS DADOS BATEM - INICIO
 

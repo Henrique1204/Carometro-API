@@ -11,13 +11,8 @@ module.exports = async (req, res) => {
         // Extraindo dados da requisição que foram passados no body.
         const { nome, periodo } = req.body;
 
-        // Testando se os dados passados na requisição estão vazios.
-        if (!nome || !periodo ) {
-            // Cria um objeto com as informações de erros.
-            const erro = { cod: 400, mensagem: 'Dados incompletos!' };
-            // Lançando uma exceção.
-            throw new ExceptionAPI(erro);
-        }
+        // Testando se os dados passados na requisição estão vazios e lança uma exceção.
+        if (!nome || !periodo ) throw new ExceptionAPI(400);
         // ## VALIDAÇÃO DE ENTRADA - FIM
 
         // ## INSERINDO CURSOS NO BANCO DE DADOS - INICIO
@@ -29,7 +24,7 @@ module.exports = async (req, res) => {
         // Executa uma consulta no banco de dados e extraí as informações retornadas.
         const { ok, resposta } = await query(sql, 'cursos', 'insert');
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!ok) throw new ExceptionAPI(resposta);
+        if (!ok) throw new ExceptionAPI(null, resposta);
         // ## INSERINDO CURSOS NO BANCO DE DADOS - FIM
 
         // Retorna a resposta de sucesso do servidor.
