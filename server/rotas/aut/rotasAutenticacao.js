@@ -7,6 +7,7 @@ const cadastro = require('./cadastro.js');
 // Middleware para validar rotas.
 const validarRotas = require('../../util/validarRotas.js');
 
+// Exportando função que insere as rotas no router.
 module.exports = (router) => {
     // Login.
     router.post('/login', login);

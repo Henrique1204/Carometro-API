@@ -4,6 +4,7 @@ const postTurmas = require('./post_turmas.js');
 const putTurmas = require('./put_turmas.js');
 const deleteTurmas = require('./delete_turmas.js');
 
+// Exportando função que insere as rotas no router.
 module.exports = (router) => {
     // GET
     router.get('/turmas', getTurmas);

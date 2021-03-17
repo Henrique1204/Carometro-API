@@ -24,6 +24,7 @@ rotasCursos(routerAPI);
 const rotasTurmas = require('./api/turmas/rotasTurmas.js');
 rotasTurmas(routerAPI);
 
+// Exportando função que adiciona as rotas no app.
 module.exports = (app) => {
     app.use('/api', routerAPI);
     app.use('/aut', routerAut);

@@ -1,8 +1,8 @@
 module.exports = class ExceptionAPI {
-    constructor(cod, mensagem, erroSQL) {
-        this.cod = cod;
-        this.mensagem = mensagem;
-        this.erroSQL = erroSQL || null;
+    constructor(erro) {
+        this.cod = erro.cod;
+        this.mensagem = erro.mensagem;
+        this.erroSQL = erro.erroSQL || null;
         this.tipo = 'API';
     }
 };

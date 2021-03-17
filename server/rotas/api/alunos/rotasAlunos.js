@@ -6,6 +6,7 @@ const deleteAluno = require('./delete_aluno.js');
 // Multer.
 const upload = require('../../../multer.js');
 
+// Exportando função que insere as rotas no router.
 module.exports = (router) => {
     // GET
     router.get('/alunos', getAlunos);

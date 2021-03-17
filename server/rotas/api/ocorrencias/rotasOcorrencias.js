@@ -4,6 +4,7 @@ const postOcorrencias = require('./post_ocorrencias.js');
 const putOcorrencias = require('./put_ocorrencias.js');
 const deleteOcorrencias = require('./delete_ocorrencias.js');
 
+// Exportando função que insere as rotas no router.
 module.exports = (router) => {
     // GET
     router.get('/ocorrencias',  getOcorrencias);
