@@ -2,6 +2,7 @@
 const ExceptionAPI = require('../../../util/ExceptionAPI.js');
 // Importando método para realizar consultas no banco de dados.
 const { query } = require('../../../db/consultas.js');
+const { filtrarTurmas } = require('../../../util/filtros.js');
 
 // Exportando função para rota da API.
 module.exports = async (req, res) => {
@@ -17,23 +18,38 @@ module.exports = async (req, res) => {
 
         // ## BUSCANDO DADOS DE CURSOS - INICIO
         // Define o sql que deverá ser passado na consulta para buscar dados.
-        const sql = `SELECT * FROM cursos ${(id) ? `WHERE id = ${id}` : ''} ORDER BY id`;
+        const sqlCursos = `SELECT * FROM cursos ${(id) ? `WHERE id = ${id}` : ''} ORDER BY id`;
         // Executa uma consulta no banco de dados e extraí as informações retornadas.
-        const { ok, resposta } = await query(sql, 'cursos', 'select');
+        const resCursos = await query(sqlCursos, 'cursos', 'select');
         // Testa se a consulta não foi ok e lança uma exceção com as informações de erro.
-        if (!ok) throw new ExceptionAPI(null, resposta);
+        if (!resCursos.ok) throw new ExceptionAPI(null, resCursos.resposta);
         // ## BUSCANDO DADOS DE CURSOS - FIM
 
         // ## CONFERINDO TIPO DE RETORNO - INICIO
         // Testa se a resposta retornada veio sem conteúdo e lança uma exceção.
-        if (id && resposta.length === 0) throw new ExceptionAPI(404);
+        if (id && resCursos.resposta.length === 0) throw new ExceptionAPI(404);
+
+        let dados = resCursos.resposta.map((curso) => ({
+            ...curso,
+            turmas: []
+        }));
+
+        const sqlTurmas = `SELECT * FROM turmas ORDER BY id`;
+        const resTurmas = await query(sqlTurmas, 'turmas', 'select');
+
+        if (resTurmas.ok) {
+            dados = resCursos.resposta.map((curso) => ({
+                ...curso,
+                turmas: filtrarTurmas(resTurmas.resposta, curso.id)
+            }));
+        }
 
         // Testa se o id foi informado e retorna a resposta de sucesso do servidor.
-        if (id) return res.status(200).send(resposta[0]);
+        if (id) return res.status(200).send(dados[0]);
         // ## CONFEREINDO TIPO DE RETORNO - FIM
 
         // Retorna a resposta de sucesso do servidor.
-        return res.status(200).send(resposta);
+        return res.status(200).send(dados);
     
     // Fechando bloco de teste e abrindo bloco de captura de exceções.
     } catch (erro) {

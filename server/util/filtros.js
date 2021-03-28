@@ -25,7 +25,19 @@ const filtrarAlunos = (lista, id) => {
     return listaFormatada;
 };
 
+const filtrarTurmas = (lista, id) => {
+    const listaFiltrada = lista.filter(({ id_curso }) => id_curso === id);
+    const listaFormatada = listaFiltrada.map(({ id, nome, formado }) => ({
+        id,
+        nome,
+        formado
+    }));
+
+    return listaFormatada;
+};
+
 module.exports = {
     filtrarAlunos,
-    filtrarOcorrencias
+    filtrarOcorrencias,
+    filtrarTurmas
 }
