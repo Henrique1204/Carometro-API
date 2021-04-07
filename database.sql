@@ -7,6 +7,8 @@ CREATE TABLE alunos (
 	nome varchar(255) NOT NULL,
 	email varchar(255) NOT NULL,
 	telefone varchar(255) NOT NULL,
+	celular varchar(255) NOT NULL,
+	matricula varchar(255) NOT NULL,
 	data_nascimento date NOT NULL,
 	foto varchar(255) NOT NULL,
 	id_turma int NOT NULL,
@@ -48,13 +50,14 @@ CREATE TABLE usuarios (
 	nome varchar(255) NOT NULL,
 	senha varchar(255) NOT NULL,
 	isAdmin tinyint(1) NOT NULL,
+	foto varchar(255) NOT NULL,
 	PRIMARY KEY (id)
 );
 
-INSERT INTO alunos (id, nome, email, telefone, data_nascimento, foto, id_turma) VALUES 
-(null, 'Paulo', 'paulo@gmail.com', '11 987654321', '2001-09-20', 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg', 1),
-(null, 'Henrique', 'henrique@gmail.com', '11 987654321', '2001-09-20', 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg', 1),
-(null, 'Silva', 'silva@gmail.com', '11 987654321', '2001-09-20', 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg', 2);
+INSERT INTO alunos (id, nome, email, telefone, celular, matricula, data_nascimento, foto, id_turma) VALUES 
+(null, 'Paulo', 'paulo@gmail.com', '11 987654321', '11 987654321', '111','2001-09-20', 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg', 1),
+(null, 'Henrique', 'henrique@gmail.com', '11 987654321', '11 987654321',  '222', '2001-09-20', 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg', 1),
+(null, 'Silva', 'silva@gmail.com', '11 987654321', '11 987654321', '333', '2001-09-20', 'uploads/2021-03-13T03-32-21.591Z-aluno.jpg', 2);
 
 INSERT INTO cursos (id, nome, periodo) VALUES 
 (null, 'Desenvolvimento', 'manhã'),
@@ -66,12 +69,12 @@ INSERT INTO ocorrencias (id, data_criacao, titulo, conteudo, criado_por, id_alun
 (null, '2021-03-12', 'Briga com aluno', 'Brigou com um aluno em sala de aula', 'Cláudia', 2);
 
 INSERT INTO turmas (id, nome, id_curso, formado) VALUES 
-(null, '1DT', 1, 0),
-(null, '2DT', 2, 0);
+(null, '1DM', 1, 0),
+(null, '1DT', 2, 0);
 
-INSERT INTO usuarios (id, NI, nome, senha, isAdmin) VALUES 
-(null, "222", "Átila", SHA2("1234", 224), 0),
-(null, "333", "Alexandre", SHA2("4321", 224), 1);
+INSERT INTO usuarios (id, NI, nome, senha, isAdmin, foto) VALUES 
+(null, "222", "Átila", SHA2("1234", 224), 0, ''),
+(null, "333", "Alexandre", SHA2("4321", 224), 1, '');
 
 CREATE USER IF NOT EXISTS 'carometro'@'localhost' IDENTIFIED BY 'senai115';
 GRANT ALL PRIVILEGES ON * . * TO 'carometro'@'localhost';
