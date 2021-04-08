@@ -16,12 +16,12 @@ module.exports = async (req, res) => {
     try {
         // ## VALIDAÇÃO DE ENTRADA - INICIO
         // Extraindo dados da requisição que foram passados no body.
-        const { nome, email, telefone, data_nascimento, id_turma } = req.body;
+        const { nome, email, telefone, data_nascimento, id_turma, celular, matricula } = req.body;
         // Definindo o valor da variável fotos com o caminho do arquivo passado na requisição.
         foto = req.file?.path.replace('\\', '/');
 
         // Testando se os dados passados na requisição estão vazios.
-        if (!nome || !email || !telefone || !data_nascimento || !foto || !id_turma ) {
+        if (!nome || !email || !telefone || !data_nascimento || !foto || !id_turma || !celular ||!matricula ) {
             // Lançando uma exceção.
             throw new ExceptionAPI(400);
         }
@@ -66,8 +66,9 @@ module.exports = async (req, res) => {
         // ## INSERINDO ALUNO NO BANCO DE DADOS - INICIO
         // Define o sql que deverá ser passado na consulta para inserir o novo aluno.
         const sqlInsert = (
-            `INSERT INTO alunos (id, nome, email, telefone, data_nascimento, foto, id_turma) VALUES
-            (null, '${nome}', '${email}', '${telefone}', '${data_nascimento}', '${foto}', '${id_turma}')`
+            `INSERT INTO alunos (id, nome, email, telefone, celular, 
+            matricula, data_nascimento, foto, id_turma) VALUES (null, '${nome}', '${email}', '${telefone}', 
+            '${celular}', '${matricula}','${data_nascimento}', '${foto}', '${id_turma}')`
         );
 
         // Executa uma consulta no banco de dados e guarda a resposta.

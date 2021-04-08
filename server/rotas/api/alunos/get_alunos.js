@@ -18,8 +18,8 @@ module.exports = async (req, res) => {
         // ## BUSCANDO DADOS DE ALUNOS - INICIO
         // Define o sql que deverá ser passado na consulta para buscar dados.
         const sql = (
-            `SELECT a.id, a.nome, a.email, a.telefone, a.data_nascimento, a.foto, t.nome AS turma, 
-            t.formado FROM alunos AS a INNER JOIN turmas AS t ON a.id_turma = t.id 
+            `SELECT a.id, a.nome, a.email, a.telefone, a.data_nascimento, a.foto, a.celular, a.matricula,
+            t.nome AS turma, t.formado FROM alunos AS a INNER JOIN turmas AS t ON a.id_turma = t.id 
             ${(id) ? `WHERE a.id = ${id}` : ''} ORDER by a.id`
         );
 

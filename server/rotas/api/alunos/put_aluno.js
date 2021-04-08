@@ -18,12 +18,14 @@ module.exports = async (req, res) => {
         // Extraindo a propriedade id do objeto params da requisição.
         const { id } = req.params;
         // Extraindo dados da requisição que foram passados no body.
-        const { nome, email, telefone, id_turma } = req.body;
+        const { nome, email, telefone, id_turma, celular } = req.body;
         // Definindo o valor da variável fotos com o caminho do arquivo passado na requisição
         foto = req.file?.path.replace('\\', '/');
 
         // Testando se os dados passados na requisição estão vazios e lança uma exceção.
-        if (!nome || !email || !telefone || !foto || !id_turma) throw new ExceptionAPI(400);
+        if (!nome || !email || !telefone || !foto || !id_turma || !celular) {
+            throw new ExceptionAPI(400);
+        }
 
         // Testando se os ids informados não são números e lança uma exceção.
         if (isNaN(id_turma) || isNaN(id)) throw new ExceptionAPI(406);
@@ -75,7 +77,7 @@ module.exports = async (req, res) => {
         // Define o sql que deverá ser passado na consulta para atualizar aluno.
         const sqlUpdate = (
             `UPDATE alunos SET nome = '${nome}', email = '${email}', telefone = '${telefone}', 
-            foto = '${foto}', id_turma = '${id_turma}' WHERE id = ${id}`
+            foto = '${foto}', id_turma = '${id_turma}', celular = '${celular}' WHERE id = ${id}`
         );
         // Executa uma consulta no banco de dados.
         const resUpdate = await query(sqlUpdate, 'alunos', 'update');
