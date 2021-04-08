@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
 
         // ## GERANDO O TOKEN E MONTANDO DADOS PARA RETORNO - INICIO
         // Extraíndo dados da resposta da consulta.
-        const { id, NI, nome, isAdmin } = resposta[0];
+        const { id, NI, nome, isAdmin, foto } = resposta[0];
         // Vairável onde o token será guardado.
         let token;
 
@@ -61,7 +61,7 @@ module.exports = async (req, res) => {
         return res.status(202).send({
             auth: true,
             token,
-            usuario: { NI, nome, isAdmin: isAdmin !== 0 }
+            usuario: { NI, nome, isAdmin: isAdmin !== 0, foto }
         });
 
     // Fechando bloco de teste e abrindo bloco de captura de exceções.
